@@ -2,7 +2,7 @@ package model;
 
 import java.time.LocalDate;
 
-public class Tarefa{
+public class Tarefa implements Comparable<Tarefa>{
 
     private String nome;
     private String descricao;
@@ -45,6 +45,9 @@ public class Tarefa{
         return prioridade;
     }
     public void setPrioridade(int prioridade) {
+        if (prioridade < 1 || prioridade > 5) {
+            throw new IllegalArgumentException("Prioridade deve ser entre 1 e 5.");
+        }
         this.prioridade = prioridade;
     }
 
@@ -62,4 +65,8 @@ public class Tarefa{
         this.status = status;
     }
 
+    @Override
+    public int compareTo(Tarefa o) {
+        return Integer.compare(o.getPrioridade(), this.prioridade);
+    }
 }
