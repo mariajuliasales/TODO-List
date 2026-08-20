@@ -78,7 +78,7 @@ public class Tarefa implements Comparable<Tarefa>{
 
     @Override
     public String toString() {
-        return String.format("[%s] Prioridade: %d | %s - %s (Até: %s) | Categoria: %s",
+        return String.format("ID: %d [%s] Prioridade: %d | %s - %s (Até: %s) | Categoria: %s", id,
                 status, prioridade, nome, descricao, dataTermino, categoria);
     }
 }

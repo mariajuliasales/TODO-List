@@ -13,7 +13,7 @@ import java.util.stream.Collectors;
 public class TarefaService {
 
     private List<Tarefa> tarefas = new ArrayList<>();
-    private final AtomicInteger contadorId = new AtomicInteger(0); // Contador inicia em 0
+    private final AtomicInteger contadorId = new AtomicInteger(1); // Contador inicia em 1
 
     public Tarefa adicionar(String nome, String descricao, LocalDate dataTermino, int prioridade, String categoria) {
         int novoId = contadorId.getAndIncrement();
