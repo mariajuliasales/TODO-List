@@ -75,4 +75,10 @@ public class Tarefa implements Comparable<Tarefa>{
     public int compareTo(Tarefa o) {
         return Integer.compare(o.getPrioridade(), this.prioridade);
     }
+
+    @Override
+    public String toString() {
+        return String.format("[%s] Prioridade: %d | %s - %s (Até: %s) | Categoria: %s",
+                status, prioridade, nome, descricao, dataTermino, categoria);
+    }
 }
