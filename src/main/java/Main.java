@@ -26,7 +26,8 @@ public class Main {
                 case 1 -> cadastrarTarefa();
                 case 2 -> listarTarefas();
                 case 3 -> atualizarTarefa();
-                case 4 -> deletarTarefa();
+                case 4 -> atualizarStatusTarefa();
+                case 5 -> deletarTarefa();
                 case 0 -> System.out.println("Saindo do sistema...");
                 default -> System.out.println("Opção inválida!");
             }
@@ -39,7 +40,8 @@ public class Main {
         System.out.println("1. Cadastrar Tarefa");
         System.out.println("2. Listar Tarefas");
         System.out.println("3. Atualizar Tarefa");
-        System.out.println("4. Deletar Tarefa");
+        System.out.println("4. Atualizar Status da Tarefa");
+        System.out.println("5. Deletar Tarefa");
         System.out.println("0. Sair do programa");
         System.out.print("Escolha uma opção: ");
     }
@@ -131,6 +133,22 @@ public class Main {
         boolean deletado = service.deletar(id);
         if (deletado) {
             System.out.println("Tarefa deletada com sucesso!");
+        } else {
+            System.out.println("Tarefa não encontrada!");
+        }
+    }
+
+    private static void atualizarStatusTarefa() {
+        System.out.print("Digite o ID da tarefa que deseja atualizar o status: ");
+        int id = Integer.parseInt(scanner.nextLine());
+
+        System.out.print("Novo status (TODO, DOING, DONE): ");
+        StatusEnum novoStatus = StatusEnum.valueOf(scanner.nextLine());
+
+        Tarefa tarefaAtualizada = service.atualizarStatus(id, novoStatus);
+        if (tarefaAtualizada != null) {
+            System.out.println("Status da tarefa atualizado com sucesso!");
+            System.out.println(tarefaAtualizada);
         } else {
             System.out.println("Tarefa não encontrada!");
         }
