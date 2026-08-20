@@ -75,4 +75,8 @@ public class TarefaService {
         }
         return false; // tarefa nao encontrada
     }
+
+    public boolean deletar(int id) {
+        return tarefas.removeIf(t -> t.getId() == id);
+    }
 }
