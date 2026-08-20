@@ -59,4 +59,20 @@ public class TarefaService {
         }
         return null;
     }
+
+    public boolean atualizar(int id, String novoNome, String novaDescricao, LocalDate novaDataTermino, int novaPrioridade, String novaCategoria) {
+        for (Tarefa t : tarefas) {
+            if (t.getId() == id) {
+                t.setNome(novoNome);
+                t.setDescricao(novaDescricao);
+                t.setDataTermino(novaDataTermino);
+                t.setPrioridade(novaPrioridade);
+                t.setCategoria(novaCategoria);
+
+                rebalancearPrioridades();
+                return true;
+            }
+        }
+        return false; // tarefa nao encontrada
+    }
 }
