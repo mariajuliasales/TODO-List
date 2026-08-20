@@ -25,7 +25,7 @@ public class Main {
             switch (opc) {
                 case 1 -> cadastrarTarefa();
                 case 2 -> listarTarefas();
-                case 3 -> System.out.println("implementar atualização");
+                case 3 -> atualizarTarefa();
                 case 4 -> System.out.println("implementar deleção");
                 case 0 -> System.out.println("Saindo do sistema...");
                 default -> System.out.println("Opção inválida!");
@@ -100,4 +100,28 @@ public class Main {
         }
 
     }
+
+    private static void atualizarTarefa() {
+        System.out.print("Digite o ID da tarefa que deseja atualizar: ");
+        int id = Integer.parseInt(scanner.nextLine());
+
+        System.out.print("Novo nome: ");
+        String novoNome = scanner.nextLine();
+        System.out.print("Nova descrição: ");
+        String novaDescricao = scanner.nextLine();
+        System.out.print("Nova data de término (dd/MM/yyyy): ");
+        LocalDate novaDataTermino = LocalDate.parse(scanner.nextLine(), formatter);
+        System.out.print("Nova prioridade (1 a 5): ");
+        int novaPrioridade = Integer.parseInt(scanner.nextLine());
+        System.out.print("Nova categoria: ");
+        String novaCategoria = scanner.nextLine();
+
+        boolean atualizado = service.atualizar(id, novoNome, novaDescricao, novaDataTermino, novaPrioridade, novaCategoria);
+        if (atualizado) {
+            System.out.println("Tarefa atualizada com sucesso!");
+        } else {
+            System.out.println("Tarefa não encontrada!");
+        }
+    }
+
 }
