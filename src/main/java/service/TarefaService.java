@@ -7,7 +7,6 @@ import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
 import java.util.concurrent.atomic.AtomicInteger;
-import java.util.stream.Collectors;
 
 public class TarefaService {
 
@@ -18,7 +17,13 @@ public class TarefaService {
         int novoId = contadorId.getAndIncrement();
         Tarefa novaTarefa = new Tarefa(novoId, nome, descricao, dataTermino, prioridade, categoria);
         tarefas.add(novaTarefa);
+
+        rebalancearPrioridades();
         return novaTarefa;
+    }
+
+    private void rebalancearPrioridades() {
+        tarefas.sort(Comparator.comparingInt(Tarefa::getPrioridade).reversed());
     }
 
 }
