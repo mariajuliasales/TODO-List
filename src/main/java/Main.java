@@ -26,7 +26,7 @@ public class Main {
                 case 1 -> cadastrarTarefa();
                 case 2 -> listarTarefas();
                 case 3 -> atualizarTarefa();
-                case 4 -> System.out.println("implementar deleção");
+                case 4 -> deletarTarefa();
                 case 0 -> System.out.println("Saindo do sistema...");
                 default -> System.out.println("Opção inválida!");
             }
@@ -119,6 +119,18 @@ public class Main {
         boolean atualizado = service.atualizar(id, novoNome, novaDescricao, novaDataTermino, novaPrioridade, novaCategoria);
         if (atualizado) {
             System.out.println("Tarefa atualizada com sucesso!");
+        } else {
+            System.out.println("Tarefa não encontrada!");
+        }
+    }
+
+    private static void deletarTarefa() {
+        System.out.print("Digite o ID da tarefa que deseja deletar: ");
+        int id = Integer.parseInt(scanner.nextLine());
+
+        boolean deletado = service.deletar(id);
+        if (deletado) {
+            System.out.println("Tarefa deletada com sucesso!");
         } else {
             System.out.println("Tarefa não encontrada!");
         }
