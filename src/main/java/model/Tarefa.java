@@ -4,6 +4,7 @@ import java.time.LocalDate;
 
 public class Tarefa implements Comparable<Tarefa>{
 
+    private int id;
     private String nome;
     private String descricao;
     private LocalDate dataTermino;
@@ -11,13 +12,18 @@ public class Tarefa implements Comparable<Tarefa>{
     private String categoria;
     private StatusEnum status;
 
-    public Tarefa(String nome, String descricao, LocalDate dataTermino, int prioridade, String categoria, StatusEnum status) {
+    public Tarefa(int id, String nome, String descricao, LocalDate dataTermino, int prioridade, String categoria) {
+        this.id = id;
         this.nome = nome;
         this.descricao = descricao;
         this.dataTermino = dataTermino;
         this.prioridade = prioridade;
         this.categoria = categoria;
-        this.status = status;
+        this.status = StatusEnum.TODO;
+    }
+
+    public int getId(){
+        return id;
     }
 
     public String getNome() {
