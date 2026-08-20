@@ -50,4 +50,13 @@ public class TarefaService {
                 .collect(Collectors.toList());
     }
 
+    public Tarefa atualizarStatus(int id, StatusEnum novoStatus) {
+        for (Tarefa tarefa : tarefas) {
+            if (tarefa.getId() == id) {
+                tarefa.setStatus(novoStatus);
+                return tarefa;
+            }
+        }
+        return null;
+    }
 }
