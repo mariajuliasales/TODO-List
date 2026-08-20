@@ -1,5 +1,6 @@
 package service;
 
+import model.StatusEnum;
 import model.Tarefa;
 
 import java.time.LocalDate;
@@ -7,6 +8,7 @@ import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
 import java.util.concurrent.atomic.AtomicInteger;
+import java.util.stream.Collectors;
 
 public class TarefaService {
 
@@ -24,6 +26,28 @@ public class TarefaService {
 
     private void rebalancearPrioridades() {
         tarefas.sort(Comparator.comparingInt(Tarefa::getPrioridade).reversed());
+    }
+
+    public List<Tarefa> listar() {
+        return tarefas;
+    }
+
+    public List<Tarefa> listarPorCategoria(String categoria) {
+        return tarefas.stream()
+                .filter(t -> t.getCategoria().equalsIgnoreCase(categoria))
+                .collect(Collectors.toList());
+    }
+
+    public List<Tarefa> listarPorPrioridade(int prioridade) {
+        return tarefas.stream()
+                .filter(t -> t.getPrioridade() == prioridade)
+                .collect(Collectors.toList());
+    }
+
+    public List<Tarefa> listarPorStatus(StatusEnum status) {
+        return tarefas.stream()
+                .filter(t -> t.getStatus() == status)
+                .collect(Collectors.toList());
     }
 
 }
