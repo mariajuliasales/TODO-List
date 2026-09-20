@@ -1,0 +1,190 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description"
+        content="Aplicação Todo List em HTML, CSS e JavaScript desenvolvida por Maria Julia Sales.">
+    <title>Todo List</title>
+    <link rel="stylesheet" href="css/base.css">
+    <link rel="stylesheet" href="css/components.css">
+    <link rel="stylesheet" href="css/modal.css">
+    <link rel="stylesheet" href="css/responsive.css">
+</head>
+
+<body>
+    <header class="header">
+        <div class="container header-content">
+            <div>
+                <p class="caption">Organização pessoal</p>
+                <h1>Todo List</h1>
+            </div>
+        </div>
+    </header>
+
+    <main class="container">
+
+        <section class="summary">
+            <article class="summary-card">
+                <span class="summary-label">Total</span>
+                <strong id="total-count">0</strong>
+            </article>
+            <article class="summary-card card-todo">
+                <span class="summary-label">TODO</span>
+                <strong id="todo-count">0</strong>
+            </article>
+            <article class="summary-card card-doing">
+                <span class="summary-label">DOING</span>
+                <strong id="doing-count">0</strong>
+            </article>
+            <article class="summary-card card-done">
+                <span class="summary-label">DONE</span>
+                <strong id="done-count">0</strong>
+            </article>
+        </section>
+
+        <!-- Lista de tarefas -->
+        <section class="panel">
+            <div class="section-heading">
+                <div>
+                    <p class="section-kicker">Minhas tarefas</p>
+                    <h2>Lista de tarefas</h2>
+                </div>
+                <button id="open-modal-btn" class="button button-primary" type="button">Criar tarefa</button>
+            </div>
+
+            <div class="filters">
+                <div class="search-field">
+                    <span>⌕</span>
+                    <input id="search-input" type="search" placeholder="Pesquisar por nome..."
+                        aria-label="Pesquisar por nome">
+                </div>
+
+                <div class="filter-field">
+                    <label for="status-filter">Status</label>
+                    <select id="status-filter">
+                        <option value="ALL">Todos</option>
+                        <option value="TODO">TODO</option>
+                        <option value="DOING">DOING</option>
+                        <option value="DONE">DONE</option>
+                    </select>
+                </div>
+
+                <div class="filter-field">
+                    <label for="category-filter">Categoria</label>
+                    <select id="category-filter">
+                        <option value="ALL">Todas</option>
+                        <option value="Estudos">Estudos</option>
+                        <option value="Trabalho">Trabalho</option>
+                        <option value="Pessoal">Pessoal</option>
+                        <option value="Casa">Casa</option>
+                        <option value="Outros">Outros</option>
+                    </select>
+                </div>
+
+                <div class="filter-field">
+                    <label for="priority-filter">Prioridade</label>
+                    <select id="priority-filter">
+                        <option value="ALL">Todas</option>
+                        <option value="5">5 — Alta</option>
+                        <option value="4">4</option>
+                        <option value="3">3 — Média</option>
+                        <option value="2">2</option>
+                        <option value="1">1 — Baixa</option>
+                    </select>
+                </div>
+
+                <button id="clear-filters-button" class="button button-secondary" type="button">Limpar filtros</button>
+            </div>
+
+            <div id="task-list" class="task-list"></div>
+
+            <div id="empty-state" class="empty-state">
+                <div class="empty-icon">✓</div>
+                <h3 id="empty-message">Nenhuma tarefa cadastrada</h3>
+            </div>
+        </section>
+
+        <!--Formulario modal-->
+        <div id="modal-overlay" class="modal-overlay hidden">
+            <section class="panel modal-content">
+                <div class="modal-header">
+                    <div>
+                        <p class="section-kicker">Nova tarefa</p>
+                        <h2 id="form-title">Criar tarefa</h2>
+                    </div>
+                    <button id="close-modal-btn" class="close-btn" type="button" title="Fechar">&times;</button>
+                </div>
+
+                <form id="task-form">
+                    <div class="form-grid">
+                        <div class="form-field field-wide">
+                            <label for="task-name">Nome <span>*</span></label>
+                            <input id="task-name" type="text" maxlength="100" placeholder="Ex.: Estudar JavaScript">
+                        </div>
+
+                        <div class="form-field field-wide">
+                            <label for="task-description">Descrição <span>*</span></label>
+                            <textarea id="task-description" rows="3" maxlength="500"
+                                placeholder="Descreva a atividade..."></textarea>
+                        </div>
+
+                        <div class="form-field">
+                            <label for="task-date">Data de término <span>*</span></label>
+                            <input id="task-date" type="date">
+                        </div>
+
+                        <div class="form-field">
+                            <label for="task-category">Categoria <span>*</span></label>
+                            <select id="task-category">
+                                <option value="">Selecione uma categoria</option>
+                                <option value="Estudos">Estudos</option>
+                                <option value="Trabalho">Trabalho</option>
+                                <option value="Pessoal">Pessoal</option>
+                                <option value="Casa">Casa</option>
+                                <option value="Outros">Outros</option>
+                            </select>
+                        </div>
+
+                        <div class="form-field">
+                            <label for="task-status">Status <span>*</span></label>
+                            <select id="task-status">
+                                <option value="TODO">TODO</option>
+                                <option value="DOING">DOING</option>
+                                <option value="DONE">DONE</option>
+                            </select>
+                        </div>
+
+                        <div class="form-field">
+                            <label for="task-priority">Prioridade <span>*</span></label>
+                            <select id="task-priority">
+                                <option value="">Selecione</option>
+                                <option value="1">1 — Baixa</option>
+                                <option value="2">2</option>
+                                <option value="3">3 — Média</option>
+                                <option value="4">4</option>
+                                <option value="5">5 — Alta</option>
+                            </select>
+                        </div>
+                    </div>
+
+                    <div class="form-actions">
+                        <button id="submit-button" class="button button-primary" type="submit">Adicionar tarefa</button>
+                    </div>
+                </form>
+            </section>
+        </div>
+
+    </main>
+
+    <footer>
+        <p>Todo List · HTML5 + CSS3 + JavaScript.</p>
+        <p>Desenvolvido por Maria Julia Sales.</p>
+    </footer>
+
+    <script type="module" src="js/main.js">
+    </script>
+</body>
+
+</html>
