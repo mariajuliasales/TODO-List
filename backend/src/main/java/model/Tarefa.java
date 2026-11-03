@@ -1,22 +1,30 @@
 package model;
 
+import java.io.Serializable;
 import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.time.LocalTime;
+import java.util.ArrayList;
+import java.util.List;
 
-public class Tarefa implements Comparable<Tarefa>{
+public class Tarefa implements Comparable<Tarefa>, Serializable {
 
     private int id;
     private String nome;
     private String descricao;
     private LocalDate dataTermino;
+    private LocalTime horaTermino;
     private int prioridade; // 1 a 5
     private String categoria;
     private StatusEnum status;
+    private final List<Alarme> alarmes = new ArrayList<>();
 
-    public Tarefa(int id, String nome, String descricao, LocalDate dataTermino, int prioridade, String categoria) {
+    public Tarefa(int id, String nome, String descricao, LocalDate dataTermino, LocalTime horaTermino, int prioridade, String categoria) {
         this.id = id;
         this.nome = nome;
         this.descricao = descricao;
         this.dataTermino = dataTermino;
+        this.horaTermino = horaTermino;
         this.prioridade = prioridade;
         this.categoria = categoria;
         this.status = StatusEnum.TODO;
@@ -47,6 +55,17 @@ public class Tarefa implements Comparable<Tarefa>{
         this.dataTermino = dataTermino;
     }
 
+    public LocalTime getHoraTermino() {
+        return horaTermino;
+    }
+    public void setHoraTermino(LocalTime horaTermino) {
+        this.horaTermino = horaTermino;
+    }
+
+    public LocalDateTime getPrazo() {
+        return LocalDateTime.of(dataTermino, horaTermino);
+    }
+
     public int getPrioridade() {
         return prioridade;
     }
@@ -71,6 +90,31 @@ public class Tarefa implements Comparable<Tarefa>{
         this.status = status;
     }
 
+    public List<Alarme> getAlarmes() {
+        return alarmes;
+    }
+
+    public void adicionarAlarme(Alarme alarme) {
+        for (Alarme a : alarmes) {
+            if (a.getAntecedenciaMinutos() == alarme.getAntecedenciaMinutos()) {
+                throw new IllegalArgumentException("Já existe um alarme com essa antecedência.");
+            }
+        }
+        alarmes.add(alarme);
+    }
+
+    public boolean removerAlarme(int indice) {
+        if (indice < 0 || indice >= alarmes.size()) {
+            return false;
+        }
+        alarmes.remove(indice);
+        return true;
+    }
+
+    public void reiniciarAlarmes() {
+        alarmes.forEach(a -> a.setDisparado(false));
+    }
+
     @Override
     public int compareTo(Tarefa o) {
         return Integer.compare(o.getPrioridade(), this.prioridade);
@@ -78,7 +122,7 @@ public class Tarefa implements Comparable<Tarefa>{
 
     @Override
     public String toString() {
-        return String.format("ID: %d [%s] Prioridade: %d | %s - %s (Até: %s) | Categoria: %s", id,
-                status, prioridade, nome, descricao, dataTermino, categoria);
+        return String.format("ID: %d [%s] Prioridade: %d | %s - %s (Até: %s às %s) | Categoria: %s | Alarmes: %d", id,
+                status, prioridade, nome, descricao, dataTermino, horaTermino, categoria, alarmes.size());
     }
 }
