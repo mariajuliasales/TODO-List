@@ -47,8 +47,8 @@ Conforme o README e o código em `frontend/js/`:
 |---|---|
 | Linguagem backend | Java (sem framework; apenas biblioteca padrão) |
 | Versão do Java | **Java 21** (versão-alvo do projeto). Atenção: o `build.gradle` ainda não fixa a versão (sem toolchain/`sourceCompatibility`), então o Gradle usa o JDK que estiver instalado. Não use recursos de Java posteriores ao 21. Fixar a versão no `build.gradle` exige autorização (ver Restrições). |
-| Build | Gradle via wrapper (`gradlew`), versão **9.6.0** ([gradle-wrapper.properties](backend/gradle/wrapper/gradle-wrapper.properties)); plugins `java` e `application` |
-| Testes | JUnit Jupiter 5 (BOM `5.10.0`), `useJUnitPlatform()` |
+| Build | Gradle via wrapper (`gradlew`), versão **9.6.0** ([gradle-wrapper.properties](backend/gradle/wrapper/gradle-wrapper.properties)); plugins `java`, `application` e `groovy` |
+| Testes | **Spock 2.5** (`spock-core:2.5-groovy-4.0`) com **Groovy 4.0.33**, rodando na JUnit Platform (`useJUnitPlatform()`). Para mocks de classes: `byte-buddy` 1.18.17 e `objenesis` 3.6. `junit-platform-launcher` (exigido pelo Gradle 9 para iniciar os testes). JUnit Jupiter 5 (BOM `5.10.0`) continua declarado. Todas são dependências só de teste. |
 | Dependências de produção | Nenhuma |
 | Frontend | HTML5, CSS3, JavaScript (ES modules, sem framework, sem bundler, sem `package.json`), LocalStorage |
 
@@ -62,11 +62,15 @@ TODO-List/
 │   ├── build.gradle             # group org.example, version 1.0-SNAPSHOT, mainClass = 'Main'
 │   ├── settings.gradle
 │   ├── gradlew / gradlew.bat / gradle/wrapper/
-│   └── src/main/java/
-│       ├── Main.java            # Ponto de entrada e toda a interação com o usuário (menu, leitura e conversão de entradas)
-│       ├── model/               # Entidades: Tarefa, Alarme, StatusEnum (Serializable)
-│       ├── repository/          # TarefaRepository: lê/grava a lista de tarefas em arquivo
-│       └── service/             # Regras de negócio: TarefaService (CRUD, filtros, alarmes) e AlarmeService (disparo e mensagens)
+│   ├── src/main/java/
+│   │   ├── Main.java            # Ponto de entrada e toda a interação com o usuário (menu, leitura e conversão de entradas)
+│   │   ├── model/               # Entidades: Tarefa, Alarme, StatusEnum (Serializable)
+│   │   ├── repository/          # TarefaRepository: lê/grava a lista de tarefas em arquivo
+│   │   └── service/             # Regras de negócio: TarefaService (CRUD, filtros, alarmes) e AlarmeService (disparo e mensagens)
+│   └── src/test/groovy/         # Testes Spock, nos mesmos pacotes de src/main/java
+│       ├── model/               # Ex.: AlarmeSpec.groovy
+│       ├── repository/
+│       └── service/
 └── frontend/                    # Aplicação web estática
     ├── index.html               # Página única; carrega js/main.js como módulo
     ├── css/                     # base.css, components.css, modal.css, responsive.css
@@ -79,7 +83,13 @@ TODO-List/
         └── utils/format.js      # Formatação
 ```
 
-Ainda **não existe** `backend/src/test/java`. Testes novos devem ser criados lá, espelhando os pacotes de `src/main/java` (ex.: `src/test/java/service/TarefaServiceTest.java`).
+### Testes
+
+- Os testes são escritos em **Groovy com Spock**, em `backend/src/test/groovy/`, no mesmo pacote da classe testada (ex.: `model.Alarme` → `src/test/groovy/model/AlarmeSpec.groovy`).
+- Cada classe de teste tem o sufixo **`Spec`** e estende `spock.lang.Specification`.
+- Nomes dos métodos de teste em **português**, como frases descritivas (ex.: `def "deve lançar erro quando a antecedência for zero"()`).
+- Use os blocos `given:` / `when:` / `then:` (e `where:` para tabelas de dados), com uma descrição curta em cada bloco.
+- A especificação e o plano desta suíte de testes estão em [docs/spec.md](docs/spec.md) e [docs/plano.md](docs/plano.md).
 
 ## Como executar e testar
 
@@ -94,17 +104,18 @@ cd backend
 # Executar a aplicação (console interativo; stdin já está ligado no build.gradle)
 ./gradlew run
 
-# Executar os testes (JUnit 5)
+# Executar os testes (Spock)
 ./gradlew test
 
 # Executar uma classe de teste específica
-./gradlew test --tests 'service.TarefaServiceTest'
+./gradlew test --tests 'model.AlarmeSpec'
 ```
 
 No Windows, use `gradlew.bat` no lugar de `./gradlew`.
 
 Observações:
-- `./gradlew run` usa `backend/` como diretório de trabalho, então lê/grava `backend/tarefas.dat`. Em testes, **não** use esse arquivo: passe ao `TarefaRepository` um caminho temporário (ex.: `@TempDir` do JUnit).
+- `./gradlew run` usa `backend/` como diretório de trabalho, então lê/grava `backend/tarefas.dat`. Em testes, **não** use esse arquivo: passe ao `TarefaRepository` um caminho temporário (ex.: `@TempDir` do Spock, `spock.lang.TempDir`).
+- O resultado dos testes fica em `backend/build/reports/tests/test/index.html`.
 - `Main` chama `System.exit(0)` ao sair e usa `LocalDateTime.now()`; para testar alarmes, chame `TarefaService.verificarAlarmes(LocalDateTime)` / `AlarmeService.verificar(...)` com um horário fixo.
 
 **Frontend**: não há build. Execute com a extensão **Live Server** (VS Code): abra `frontend/index.html` e use "Open with Live Server". Não abra o arquivo direto no navegador (`file://`), porque o `index.html` carrega `js/main.js` como módulo (`type="module"`) e isso pode ser bloqueado.
