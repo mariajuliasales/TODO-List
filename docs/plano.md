@@ -19,7 +19,7 @@ Commitar `docs/spec.md`, `docs/plano.md` e o `AGENTS.md` antes de qualquer códi
 
 ---
 
-## [ ] Tarefa 1 – Configurar o Spock e provar que funciona
+## [X] Tarefa 1 – Configurar o Spock e provar que funciona
 - O que será feito:
   - Escolher versões de Groovy 4 e `spock-core` 2.x (variante `-groovy-4.0`) compatíveis com o JDK 25.
   - No `build.gradle`: adicionar o plugin `groovy` e as dependências de teste Groovy 4, `spock-core`, `byte-buddy` e `objenesis`. As dependências JUnit existentes ficam como estão.

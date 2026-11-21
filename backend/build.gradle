@@ -1,6 +1,7 @@
 plugins {
     id 'java'
     id 'application'
+    id 'groovy'
 }
 
 group = 'org.example'
@@ -13,6 +14,15 @@ repositories {
 dependencies {
     testImplementation platform('org.junit:junit-bom:5.10.0')
     testImplementation 'org.junit.jupiter:junit-jupiter'
+
+    // Spock (testes em Groovy)
+    testImplementation 'org.apache.groovy:groovy:4.0.33'
+    testImplementation 'org.spockframework:spock-core:2.5-groovy-4.0'
+    // Necessárias para o Spock criar mocks de classes (ex.: TarefaRepository)
+    testRuntimeOnly 'net.bytebuddy:byte-buddy:1.18.17'
+    testRuntimeOnly 'org.objenesis:objenesis:3.6'
+    // Exigido pelo Gradle 9 para iniciar os testes na JUnit Platform
+    testRuntimeOnly 'org.junit.platform:junit-platform-launcher'
 }
 
 application {
