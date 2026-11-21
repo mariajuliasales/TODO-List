@@ -73,7 +73,7 @@ Concluído: `AGENTS.md`, `docs/spec.md` e `docs/plano.md` foram commitados antes
 - Critérios de aceite relacionados: CA06, CA07, CA14
 - Como validar: `./gradlew test --tests 'model.TarefaSpec'` → `BUILD SUCCESSFUL`, sem falhas.
 
-## [ ] Tarefa 6 – Tarefa: validação de prioridade e bug do construtor
+## [x] Tarefa 6 – Tarefa: validação de prioridade e bug do construtor
 - O que será feito:
   - Testar a alteração de prioridade: 1 e 5 aceitas; 0 e 6 geram erro e a prioridade anterior é mantida.
   - Escrever o teste do comportamento correto do construtor (prioridade 0 e 6 devem gerar erro), marcado com `@PendingFeature` e com um comentário explicando o bug.

@@ -1,5 +1,6 @@
 package model
 
+import spock.lang.PendingFeature
 import spock.lang.Specification
 
 import java.time.LocalDate
@@ -41,6 +42,63 @@ class TarefaSpec extends Specification {
 
         then: "a ordem das prioridades é 5, 3, 2"
         ordenadas*.prioridade == [5, 3, 2]
+    }
+
+    def "deve aceitar a alteração da prioridade para #novaPrioridade"() {
+        given: "uma tarefa com prioridade 3"
+        def tarefa = novaTarefa(1, 3)
+
+        when: "a prioridade é alterada para um valor entre 1 e 5"
+        tarefa.prioridade = novaPrioridade
+
+        then: "a nova prioridade é aceita"
+        tarefa.prioridade == novaPrioridade
+
+        where:
+        novaPrioridade << [1, 5]
+    }
+
+    def "deve lançar erro e manter a prioridade anterior quando a nova prioridade for #novaPrioridade"() {
+        given: "uma tarefa com prioridade 3"
+        def tarefa = novaTarefa(1, 3)
+
+        when: "a prioridade é alterada para um valor fora de 1 a 5"
+        tarefa.prioridade = novaPrioridade
+
+        then: "ocorre um erro de argumento inválido"
+        def erro = thrown(IllegalArgumentException)
+        erro.message == "Prioridade deve ser entre 1 e 5."
+
+        and: "a prioridade anterior é mantida"
+        tarefa.prioridade == 3
+
+        where:
+        novaPrioridade << [0, 6]
+    }
+
+    /*
+     * BUG CONHECIDO (spec, seção 2.2 / CA09): o construtor de Tarefa atribui a
+     * prioridade diretamente, sem a validação de 1 a 5 que existe em setPrioridade.
+     * Por isso, hoje é possível criar uma tarefa com prioridade 0 ou 6.
+     *
+     * Este teste descreve o comportamento correto e está marcado com @PendingFeature:
+     * enquanto o bug existir, ele falha e o Spock o reporta como ignorado (skipped),
+     * sem quebrar o build. Quando o construtor for corrigido, o teste passará e o
+     * Spock acusará erro, avisando que a anotação @PendingFeature deve ser removida.
+     * A correção está fora do escopo desta feature.
+     */
+    @PendingFeature(reason = "Construtor de Tarefa não valida a prioridade (CA09)")
+    def "deve lançar erro ao criar uma tarefa com prioridade #prioridade"() {
+        given: "uma prioridade fora do intervalo de 1 a 5"
+
+        when: "a tarefa é criada"
+        novaTarefa(1, prioridade)
+
+        then: "ocorre um erro de argumento inválido"
+        thrown(IllegalArgumentException)
+
+        where:
+        prioridade << [0, 6]
     }
 
     private static Tarefa novaTarefa(int id, int prioridade) {
