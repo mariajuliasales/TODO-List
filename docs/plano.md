@@ -100,7 +100,7 @@ Concluído: `AGENTS.md`, `docs/spec.md` e `docs/plano.md` foram commitados antes
 - Critérios de aceite relacionados: CA15
 - Como validar: `./gradlew test --tests 'service.AlarmeServiceSpec'` → `BUILD SUCCESSFUL`; 5 linhas na tabela, todas passando.
 
-## [ ] Tarefa 9 – AlarmeService: quando o alarme dispara
+## [x] Tarefa 9 – AlarmeService: quando o alarme dispara
 - O que será feito (sempre com horário "agora" fixo):
   - Lista vazia → nenhum aviso.
   - Tarefa com prazo 10:00 e alarme de 30 min: às 09:29 não dispara; às 09:30 e às 09:45 dispara.
