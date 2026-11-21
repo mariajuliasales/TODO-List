@@ -63,7 +63,7 @@ Concluído: `AGENTS.md`, `docs/spec.md` e `docs/plano.md` foram commitados antes
 - Critérios de aceite relacionados: CA05
 - Como validar: `./gradlew test --tests 'model.AlarmeSpec'` → `BUILD SUCCESSFUL`; o relatório mostra uma linha para cada um dos 9 valores, todas passando.
 
-## [ ] Tarefa 5 – Tarefa: estado inicial, prazo e ordenação
+## [x] Tarefa 5 – Tarefa: estado inicial, prazo e ordenação
 - O que será feito:
   - Criar o `TarefaSpec`.
   - Testar que uma tarefa nova começa com status `TODO` e sem alarmes.
