@@ -149,7 +149,7 @@ Concluído: `AGENTS.md`, `docs/spec.md` e `docs/plano.md` foram commitados antes
 - Critérios de aceite relacionados: CA50, CA52
 - Como validar: `./gradlew test --tests 'repository.TarefaRepositorySpec'` → `BUILD SUCCESSFUL`, sem falhas.
 
-## [ ] Tarefa 14 – TarefaService: geração de IDs
+## [x] Tarefa 14 – TarefaService: geração de IDs
 - O que será feito:
   - Criar o `TarefaServiceSpec`, com o `TarefaRepository` substituído por um mock do Spock. O mock sempre responde `carregar()` com uma lista (sem isso, o serviço falha ao ser criado).
   - Este é o primeiro mock de classe: confirma que `byte-buddy` e `objenesis` funcionam.
