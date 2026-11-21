@@ -47,7 +47,7 @@ Concluído: `AGENTS.md`, `docs/spec.md` e `docs/plano.md` foram commitados antes
   - `grep -n "src/test/java\|Test\.java\|TarefaServiceTest" ../AGENTS.md` → nenhuma saída.
   - O comando de exemplo do `AGENTS.md` funciona: `./gradlew test --tests 'model.AlarmeSpec'` → `BUILD SUCCESSFUL`.
 
-## [ ] Tarefa 3 – Alarme: criação, momento de disparo e texto
+## [x] Tarefa 3 – Alarme: criação, momento de disparo e texto
 - O que será feito:
   - Testar que antecedência 0 e -1 geram erro de argumento inválido (tabela de dados).
   - Completar o teste de criação (antecedência de 1 minuto também é aceita).
