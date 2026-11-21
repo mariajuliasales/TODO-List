@@ -6,6 +6,7 @@ import model.Tarefa
 import spock.lang.Specification
 import spock.lang.TempDir
 
+import java.nio.file.Files
 import java.nio.file.Path
 import java.time.LocalDate
 import java.time.LocalTime
@@ -82,6 +83,44 @@ class TarefaRepositorySpec extends Specification {
 
         then: "o resultado é uma lista vazia"
         carregadas.isEmpty()
+    }
+
+    def "deve retornar lista vazia sem erro quando o arquivo é #descricao"() {
+        given: "um arquivo com conteúdo que não é uma lista de tarefas"
+        def caminho = pastaTemporaria.resolve("tarefas.dat")
+        Files.write(caminho, conteudo)
+
+        when: "as tarefas são carregadas"
+        def tarefas = new TarefaRepository(caminho.toString()).carregar()
+
+        then: "nenhum erro é lançado e o resultado é uma lista vazia"
+        noExceptionThrown()
+        tarefas.isEmpty()
+
+        where:
+        descricao                     || conteudo
+        "vazio"                       || new byte[0]
+        "de conteúdo inválido"        || "isto não é um arquivo de tarefas".getBytes("UTF-8")
+        "de outro tipo de objeto"     || serializar("uma String no lugar da lista")
+    }
+
+    def "não deve lançar erro ao salvar em um caminho que é uma pasta"() {
+        given: "um repositório cujo caminho aponta para uma pasta"
+        def repository = new TarefaRepository(pastaTemporaria.toString())
+
+        when: "se tenta salvar uma lista de tarefas"
+        repository.salvar([novaTarefa(1, "Estudar", 3, "Estudos")])
+
+        then: "nenhum erro é lançado e a pasta continua sendo uma pasta"
+        noExceptionThrown()
+        Files.isDirectory(pastaTemporaria)
+    }
+
+    /** Gera os bytes de um objeto serializado com ObjectOutputStream, como o repositório faz. */
+    private static byte[] serializar(Serializable objeto) {
+        def bytes = new ByteArrayOutputStream()
+        new ObjectOutputStream(bytes).withCloseable { it.writeObject(objeto) }
+        bytes.toByteArray()
     }
 
     private String arquivo(String nome) {

@@ -141,7 +141,7 @@ Concluído: `AGENTS.md`, `docs/spec.md` e `docs/plano.md` foram commitados antes
   - `./gradlew test --tests 'repository.TarefaRepositorySpec'` → `BUILD SUCCESSFUL`, sem falhas.
   - `backend/tarefas.dat` não foi criado nem alterado (ver validação da Tarefa 22).
 
-## [ ] Tarefa 13 – TarefaRepository: arquivos inválidos e erro de gravação
+## [x] Tarefa 13 – TarefaRepository: arquivos inválidos e erro de gravação
 - O que será feito:
   - Arquivo vazio, arquivo com conteúdo inválido e arquivo com outro tipo de objeto → lista vazia, sem erro (tabela de dados).
   - Salvar em um caminho que é uma pasta → nenhum erro lançado.
