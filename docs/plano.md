@@ -159,7 +159,7 @@ Concluído: `AGENTS.md`, `docs/spec.md` e `docs/plano.md` foram commitados antes
 - Critérios de aceite relacionados: CA27, CA28
 - Como validar: `./gradlew test --tests 'service.TarefaServiceSpec'` → `BUILD SUCCESSFUL`, sem falhas.
 
-## [ ] Tarefa 15 – TarefaService: adicionar tarefa
+## [x] Tarefa 15 – TarefaService: adicionar tarefa
 - O que será feito:
   - Adicionar com 30 e 60 min → status `TODO`, dois alarmes, `salvar` chamado uma vez.
   - Adicionar sem alarmes → tarefa sem alarmes.
