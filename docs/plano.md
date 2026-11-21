@@ -84,7 +84,7 @@ Concluído: `AGENTS.md`, `docs/spec.md` e `docs/plano.md` foram commitados antes
   - No relatório, o teste do construtor aparece como **ignorado** (skipped), não como falha.
   - `grep -c "<skipped" build/test-results/test/TEST-model.TarefaSpec.xml` → maior que 0.
 
-## [ ] Tarefa 7 – Tarefa: adicionar, remover e reiniciar alarmes
+## [x] Tarefa 7 – Tarefa: adicionar, remover e reiniciar alarmes
 - O que será feito:
   - Testar alarme duplicado (erro, continua com 1) e alarme diferente (fica com 2).
   - Testar remoção pela posição 0 (sucesso) e pelas posições -1 e 2 (falha, nada removido).

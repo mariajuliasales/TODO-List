@@ -101,6 +101,104 @@ class TarefaSpec extends Specification {
         prioridade << [0, 6]
     }
 
+    def "deve lançar erro ao adicionar um alarme com antecedência repetida"() {
+        given: "uma tarefa com um alarme de 30 minutos"
+        def tarefa = novaTarefa(1, 3)
+        tarefa.adicionarAlarme(new Alarme(30))
+
+        when: "outro alarme de 30 minutos é adicionado"
+        tarefa.adicionarAlarme(new Alarme(30))
+
+        then: "ocorre um erro de argumento inválido"
+        def erro = thrown(IllegalArgumentException)
+        erro.message == "Já existe um alarme com essa antecedência."
+
+        and: "a tarefa continua com um único alarme"
+        tarefa.alarmes*.antecedenciaMinutos == [30]
+    }
+
+    def "deve adicionar um alarme com antecedência diferente das existentes"() {
+        given: "uma tarefa com um alarme de 30 minutos"
+        def tarefa = novaTarefa(1, 3)
+        tarefa.adicionarAlarme(new Alarme(30))
+
+        when: "um alarme de 60 minutos é adicionado"
+        tarefa.adicionarAlarme(new Alarme(60))
+
+        then: "a tarefa fica com os dois alarmes"
+        tarefa.alarmes*.antecedenciaMinutos == [30, 60]
+    }
+
+    def "deve remover o alarme pela posição na lista"() {
+        given: "uma tarefa com alarmes de 30 e 60 minutos"
+        def tarefa = tarefaComAlarmes(30, 60)
+
+        when: "o alarme da posição 0 é removido"
+        def removido = tarefa.removerAlarme(0)
+
+        then: "a remoção tem sucesso e resta só o alarme de 60 minutos"
+        removido
+        tarefa.alarmes*.antecedenciaMinutos == [60]
+    }
+
+    def "deve falhar sem remover nada quando a posição do alarme for #posicao"() {
+        given: "uma tarefa com alarmes de 30 e 60 minutos"
+        def tarefa = tarefaComAlarmes(30, 60)
+
+        when: "se tenta remover um alarme em uma posição inválida"
+        def removido = tarefa.removerAlarme(posicao)
+
+        then: "a remoção falha e os dois alarmes continuam na tarefa"
+        !removido
+        tarefa.alarmes*.antecedenciaMinutos == [30, 60]
+
+        where:
+        posicao << [-1, 2]
+    }
+
+    def "deve falhar ao remover um alarme de uma tarefa sem alarmes"() {
+        given: "uma tarefa sem alarmes"
+        def tarefa = novaTarefa(1, 3)
+
+        when: "se tenta remover o alarme da posição 0"
+        def removido = tarefa.removerAlarme(0)
+
+        then: "a remoção falha"
+        !removido
+        tarefa.alarmes.isEmpty()
+    }
+
+    def "deve marcar todos os alarmes como não disparados ao reiniciar os alarmes"() {
+        given: "uma tarefa com dois alarmes já disparados"
+        def tarefa = tarefaComAlarmes(30, 60)
+        tarefa.alarmes.each { it.disparado = true }
+
+        when: "os alarmes são reiniciados"
+        tarefa.reiniciarAlarmes()
+
+        then: "nenhum alarme está marcado como disparado"
+        tarefa.alarmes.size() == 2
+        tarefa.alarmes.every { !it.disparado }
+    }
+
+    def "deve reiniciar os alarmes sem erro quando a tarefa não tem alarmes"() {
+        given: "uma tarefa sem alarmes"
+        def tarefa = novaTarefa(1, 3)
+
+        when: "os alarmes são reiniciados"
+        tarefa.reiniciarAlarmes()
+
+        then: "nenhum erro ocorre e a tarefa continua sem alarmes"
+        noExceptionThrown()
+        tarefa.alarmes.isEmpty()
+    }
+
+    private static Tarefa tarefaComAlarmes(int... antecedencias) {
+        def tarefa = novaTarefa(1, 3)
+        antecedencias.each { tarefa.adicionarAlarme(new Alarme(it)) }
+        tarefa
+    }
+
     private static Tarefa novaTarefa(int id, int prioridade) {
         new Tarefa(id, "Tarefa " + id, "Descrição " + id,
                 LocalDate.of(2026, 11, 20), LocalTime.of(14, 30), prioridade, "Estudos")
