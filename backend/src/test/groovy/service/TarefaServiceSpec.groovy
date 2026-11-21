@@ -116,11 +116,125 @@ class TarefaServiceSpec extends Specification {
         antecedencias << [[30, 30], [0]]
     }
 
+    def "não deve alterar as tarefas do serviço quando a lista devolvida por listar é alterada"() {
+        given: "um serviço com duas tarefas salvas"
+        repository.carregar() >> [novaTarefa(1, "Estudar"), novaTarefa(2, "Mercado")]
+        def service = new TarefaService(repository)
+
+        when: "a lista devolvida por listar é esvaziada"
+        service.listar().clear()
+
+        then: "o serviço continua com as duas tarefas"
+        service.listar()*.nome == ["Estudar", "Mercado"]
+    }
+
+    def "deve devolver listas vazias ao listar e filtrar quando não há tarefas"() {
+        given: "um serviço sem tarefas"
+        repository.carregar() >> []
+        def service = new TarefaService(repository)
+
+        when: "se lista e se filtra por categoria, prioridade e status"
+        def todas = service.listar()
+        def porCategoria = service.listarPorCategoria("Estudos")
+        def porPrioridade = service.listarPorPrioridade(3)
+        def porStatus = service.listarPorStatus(StatusEnum.TODO)
+
+        then: "todos os resultados são listas vazias"
+        todas.isEmpty()
+        porCategoria.isEmpty()
+        porPrioridade.isEmpty()
+        porStatus.isEmpty()
+    }
+
+    def "deve filtrar pela categoria #categoria sem diferenciar maiúsculas e minúsculas"() {
+        given: "uma tarefa na categoria Trabalho e outra na categoria Estudos"
+        repository.carregar() >> [
+                novaTarefa(1, "Relatório", 3, "Trabalho"),
+                novaTarefa(2, "Prova", 3, "Estudos")
+        ]
+        def service = new TarefaService(repository)
+
+        when: "se filtra pela categoria"
+        def resultado = service.listarPorCategoria(categoria)
+
+        then: "só aparecem as tarefas da categoria, ou nenhuma"
+        resultado*.nome == nomesEsperados
+
+        where:
+        categoria  || nomesEsperados
+        "Trabalho" || ["Relatório"]
+        "trabalho" || ["Relatório"]
+        "TRABALHO" || ["Relatório"]
+        "Casa"     || []
+        null       || []
+    }
+
+    def "deve filtrar apenas as tarefas com a prioridade informada"() {
+        given: "tarefas com prioridades 5, 3 e 3"
+        repository.carregar() >> [
+                novaTarefa(1, "Urgente", 5),
+                novaTarefa(2, "Média A", 3),
+                novaTarefa(3, "Média B", 3)
+        ]
+        def service = new TarefaService(repository)
+
+        when: "se filtra pela prioridade 3"
+        def resultado = service.listarPorPrioridade(3)
+
+        then: "só aparecem as tarefas com prioridade 3"
+        resultado*.nome == ["Média A", "Média B"]
+    }
+
+    def "deve filtrar apenas as tarefas com o status informado"() {
+        given: "uma tarefa em cada status"
+        repository.carregar() >> [
+                novaTarefa(1, "A fazer", 3, "Estudos", StatusEnum.TODO),
+                novaTarefa(2, "Fazendo", 3, "Estudos", StatusEnum.DOING),
+                novaTarefa(3, "Feita", 3, "Estudos", StatusEnum.DONE)
+        ]
+        def service = new TarefaService(repository)
+
+        when: "se filtra pelo status DOING"
+        def resultado = service.listarPorStatus(StatusEnum.DOING)
+
+        then: "só aparece a tarefa com status DOING"
+        resultado*.nome == ["Fazendo"]
+    }
+
+    def "deve encontrar a tarefa pelo ID quando ela existe"() {
+        given: "um serviço com tarefas de IDs 4 e 7"
+        repository.carregar() >> [novaTarefa(4, "Quatro"), novaTarefa(7, "Sete")]
+        def service = new TarefaService(repository)
+
+        when: "a tarefa de ID 7 é buscada"
+        def tarefa = service.buscarPorId(7)
+
+        then: "a tarefa é devolvida"
+        tarefa.id == 7
+        tarefa.nome == "Sete"
+    }
+
+    def "deve devolver nulo ao buscar um ID inexistente"() {
+        given: "um serviço com tarefas de IDs 4 e 7"
+        repository.carregar() >> [novaTarefa(4, "Quatro"), novaTarefa(7, "Sete")]
+        def service = new TarefaService(repository)
+
+        when: "o ID 99 é buscado"
+        def tarefa = service.buscarPorId(99)
+
+        then: "o resultado é nulo"
+        tarefa == null
+    }
+
     private static Tarefa adicionar(TarefaService service, String nome, int prioridade = 3, List<Integer> antecedencias = []) {
         service.adicionar(nome, "Descrição de " + nome, DATA_TERMINO, HORA_TERMINO, prioridade, "Estudos", antecedencias)
     }
 
-    private static Tarefa novaTarefa(int id, String nome) {
-        new Tarefa(id, nome, "Descrição de " + nome, DATA_TERMINO, HORA_TERMINO, 3, "Estudos")
+    /** Monta uma tarefa como se já estivesse salva (usada como retorno de repository.carregar()). */
+    private static Tarefa novaTarefa(int id, String nome, int prioridade = 3, String categoria = "Estudos",
+                                     StatusEnum status = StatusEnum.TODO) {
+        def tarefa = new Tarefa(id, nome, "Descrição de " + nome, DATA_TERMINO, HORA_TERMINO, prioridade, categoria)
+        tarefa.status = status
+        tarefa
     }
 }

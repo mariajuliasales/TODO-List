@@ -169,7 +169,7 @@ Concluído: `AGENTS.md`, `docs/spec.md` e `docs/plano.md` foram commitados antes
 - Critérios de aceite relacionados: CA29, CA30, CA31
 - Como validar: `./gradlew test --tests 'service.TarefaServiceSpec'` → `BUILD SUCCESSFUL`, sem falhas.
 
-## [ ] Tarefa 16 – TarefaService: listar, buscar e filtrar
+## [x] Tarefa 16 – TarefaService: listar, buscar e filtrar
 - O que será feito:
   - Alterar a lista devolvida por `listar` não muda o serviço.
   - Sem tarefas → listar e os três filtros devolvem lista vazia.
