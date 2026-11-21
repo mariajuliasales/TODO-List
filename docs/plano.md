@@ -94,7 +94,7 @@ Concluído: `AGENTS.md`, `docs/spec.md` e `docs/plano.md` foram commitados antes
 - Critérios de aceite relacionados: CA10, CA11, CA12, CA13
 - Como validar: `./gradlew test --tests 'model.TarefaSpec'` → `BUILD SUCCESSFUL`, sem falhas (o teste do construtor continua ignorado).
 
-## [ ] Tarefa 8 – AlarmeService: antecedência sugerida
+## [x] Tarefa 8 – AlarmeService: antecedência sugerida
 - O que será feito: criar o `AlarmeServiceSpec` e testar a antecedência sugerida para as prioridades de 1 a 5 (tabela de dados).
 - Arquivos criados ou alterados: `backend/src/test/groovy/service/AlarmeServiceSpec.groovy` (novo)
 - Critérios de aceite relacionados: CA15
