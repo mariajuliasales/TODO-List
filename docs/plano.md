@@ -118,7 +118,7 @@ Concluído: `AGENTS.md`, `docs/spec.md` e `docs/plano.md` foram commitados antes
 - Critérios de aceite relacionados: CA20, CA21, CA22
 - Como validar: `./gradlew test --tests 'service.AlarmeServiceSpec'` → `BUILD SUCCESSFUL`, sem falhas.
 
-## [11] Tarefa 11 – AlarmeService: texto do aviso
+## [x] Tarefa 11 – AlarmeService: texto do aviso
 - O que será feito:
   - Título: `[URGENTE] ALARME` para prioridade 4 e 5; `ALARME` para 1, 2 e 3 (tabela de dados).
   - "vence em" antes do prazo; "venceu há" depois do prazo.
@@ -128,7 +128,7 @@ Concluído: `AGENTS.md`, `docs/spec.md` e `docs/plano.md` foram commitados antes
 - Critérios de aceite relacionados: CA23, CA24, CA25, CA26
 - Como validar: `./gradlew test --tests 'service.AlarmeServiceSpec'` → `BUILD SUCCESSFUL`, sem falhas.
 
-## [ ] Tarefa 12 – TarefaRepository: salvar e carregar
+## [x] Tarefa 12 – TarefaRepository: salvar e carregar
 - O que será feito:
   - Criar o `TarefaRepositorySpec`, usando pasta temporária (`@TempDir`) em todos os testes.
   - Arquivo inexistente → lista vazia.
