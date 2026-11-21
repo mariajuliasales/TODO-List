@@ -131,6 +131,79 @@ class AlarmeServiceSpec extends Specification {
         avisos[1].contains('"Tarefa 2"')
     }
 
+    def "deve iniciar o aviso com '#titulo' quando a prioridade for #prioridade"() {
+        given: "uma tarefa com prioridade #prioridade e alarme de 30 minutos"
+        def tarefa = new Tarefa(1, "Estudar", "Revisar Spock", DATA_PRAZO, HORA_PRAZO, prioridade, "Estudos")
+        tarefa.adicionarAlarme(new Alarme(30))
+
+        when: "o alarme dispara às 09:45"
+        def avisos = service.verificar([tarefa], horario(9, 45))
+
+        then: "o aviso começa com o título esperado"
+        avisos.size() == 1
+        avisos[0].startsWith(titulo + ":")
+
+        where:
+        prioridade || titulo
+        1          || "ALARME"
+        2          || "ALARME"
+        3          || "ALARME"
+        4          || "[URGENTE] ALARME"
+        5          || "[URGENTE] ALARME"
+    }
+
+    def "deve informar '#trechoEsperado' quando o alarme dispara às #hora:#minuto"() {
+        given: "uma tarefa com prazo às 10:00 e alarme de 30 minutos"
+        def tarefa = tarefaComAlarme(30)
+
+        when: "o alarme dispara antes ou depois do prazo"
+        def avisos = service.verificar([tarefa], horario(hora, minuto))
+
+        then: "o aviso informa quanto falta ou há quanto tempo venceu"
+        avisos.size() == 1
+        avisos[0].contains(trechoEsperado)
+
+        where:
+        hora | minuto || trechoEsperado
+        9    | 45     || "vence em 15 min"
+        10   | 20     || "venceu há 20 min"
+    }
+
+    def "deve informar '#situacao' quando a tarefa está com status #status"() {
+        given: "uma tarefa com status #status e alarme de 30 minutos"
+        def tarefa = tarefaComAlarme(30)
+        tarefa.status = status
+
+        when: "o alarme dispara às 09:45"
+        def avisos = service.verificar([tarefa], horario(9, 45))
+
+        then: "o aviso informa a situação da tarefa"
+        avisos.size() == 1
+        avisos[0].endsWith(situacao)
+
+        where:
+        status           || situacao
+        StatusEnum.DOING || "Tarefa em andamento."
+        StatusEnum.TODO  || "Tarefa ainda não iniciada."
+    }
+
+    def "deve incluir o nome da tarefa e o prazo formatado no aviso"() {
+        given: "a tarefa 'Estudar' com prazo em 20/11/2026 às 14:30 e alarme de 30 minutos"
+        def tarefa = new Tarefa(1, "Estudar", "Revisar Spock", DATA_PRAZO, LocalTime.of(14, 30), 3, "Estudos")
+        tarefa.adicionarAlarme(new Alarme(30))
+
+        when: "o alarme dispara às 14:15"
+        def avisos = service.verificar([tarefa], horario(14, 15))
+
+        then: "o aviso contém o nome e o prazo no formato dd/MM/yyyy às HH:mm"
+        avisos.size() == 1
+        avisos[0].contains('"Estudar"')
+        avisos[0].contains("20/11/2026 às 14:30")
+
+        and: "o aviso completo tem o formato esperado"
+        avisos[0] == 'ALARME: "Estudar" vence em 15 min (20/11/2026 às 14:30). Tarefa ainda não iniciada.'
+    }
+
     private static LocalDateTime horario(int hora, int minuto) {
         LocalDateTime.of(DATA_PRAZO, LocalTime.of(hora, minuto))
     }

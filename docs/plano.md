@@ -118,7 +118,7 @@ Concluído: `AGENTS.md`, `docs/spec.md` e `docs/plano.md` foram commitados antes
 - Critérios de aceite relacionados: CA20, CA21, CA22
 - Como validar: `./gradlew test --tests 'service.AlarmeServiceSpec'` → `BUILD SUCCESSFUL`, sem falhas.
 
-## [ ] Tarefa 11 – AlarmeService: texto do aviso
+## [11] Tarefa 11 – AlarmeService: texto do aviso
 - O que será feito:
   - Título: `[URGENTE] ALARME` para prioridade 4 e 5; `ALARME` para 1, 2 e 3 (tabela de dados).
   - "vence em" antes do prazo; "venceu há" depois do prazo.
