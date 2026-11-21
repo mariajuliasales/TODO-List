@@ -68,4 +68,26 @@ class AlarmeSpec extends Specification {
         then: "o texto indica que o alarme já disparou"
         texto == "2 h antes (já disparado)"
     }
+
+    def "deve formatar #minutos minutos como '#textoEsperado'"() {
+        given: "uma quantidade de minutos"
+
+        when: "os minutos são formatados"
+        def texto = Alarme.formatarMinutos(minutos)
+
+        then: "o texto corresponde ao esperado"
+        texto == textoEsperado
+
+        where:
+        minutos || textoEsperado
+        0       || "menos de 1 min"
+        1       || "1 min"
+        30      || "30 min"
+        60      || "1 h"
+        90      || "1 h e 30 min"
+        1440    || "1 dia"
+        1441    || "1 dia"          // os minutos são omitidos quando há dias
+        1500    || "1 dia e 1 h"
+        2880    || "2 dias"
+    }
 }

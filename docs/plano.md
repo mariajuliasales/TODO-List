@@ -34,7 +34,7 @@ Concluído: `AGENTS.md`, `docs/spec.md` e `docs/plano.md` foram commitados antes
   - `./gradlew test --tests 'model.AlarmeSpec'` → `BUILD SUCCESSFUL`; o relatório mostra 1 teste do `AlarmeSpec` passando.
   - `./gradlew run` continua abrindo o menu (sair com `0`).
 
-## [ ] Tarefa 2 – Atualizar o AGENTS.md com a configuração de testes
+## [x] Tarefa 2 – Atualizar o AGENTS.md com a configuração de testes
 - O que será feito:
   - Na tabela "Stack e estrutura": incluir Groovy 4 e Spock 2.x (testes), `byte-buddy`, `objenesis` e `junit-platform-launcher`.
   - Na estrutura de pastas: incluir `backend/src/test/groovy/`, espelhando os pacotes de produção.
@@ -57,7 +57,7 @@ Concluído: `AGENTS.md`, `docs/spec.md` e `docs/plano.md` foram commitados antes
 - Critérios de aceite relacionados: CA01, CA02, CA03, CA04
 - Como validar: `./gradlew test --tests 'model.AlarmeSpec'` → `BUILD SUCCESSFUL`, sem falhas no relatório.
 
-## [ ] Tarefa 4 – Alarme: formatação de minutos
+## [x] Tarefa 4 – Alarme: formatação de minutos
 - O que será feito: testar `formatarMinutos` com uma tabela de dados com os 9 valores da tabela da seção 2.1 da spec.
 - Arquivos criados ou alterados: `backend/src/test/groovy/model/AlarmeSpec.groovy`
 - Critérios de aceite relacionados: CA05
