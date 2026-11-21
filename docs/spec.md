@@ -1,10 +1,8 @@
 # Spec: Testes unitários do backend com Spock
 
 - **Branch:** `feature/testes-unitarios`
-- **Status:** aguardando aprovação
+- **Status:** aprovada
 - **Referência do projeto:** [AGENTS.md](../AGENTS.md)
-
-Itens marcados como **A CONFIRMAR** dependem de decisão da mantenedora.
 
 ---
 
@@ -89,8 +87,8 @@ Esta seção descreve o comportamento **atual** do código. Os testes verificam 
 - O teste exige o comportamento **correto** (rejeitar prioridade fora de 1–5) e fica marcado com `@PendingFeature`, com um comentário explicando o bug. Enquanto o bug existir, esse teste não quebra o build. Quando o bug for corrigido, o Spock avisa que a marcação pode ser removida.
 - A correção está fora do escopo (seção 5).
 
-**Valores nulos (A CONFIRMAR)**
-- A tarefa aceita nome, descrição e categoria nulos, sem validação. Uma tarefa com data ou hora nula quebra ao calcular o prazo. O código não define se nulo é permitido. Proposta: **não testar** nulos no `model`, porque o console nunca envia esses valores, e registrar a questão para uma decisão futura.
+**Valores nulos (não testados)**
+- A tarefa aceita nome, descrição e categoria nulos, sem validação. Uma tarefa com data ou hora nula quebra ao calcular o prazo. Como o console nunca envia esses valores, **nulos não são testados** no `model` (seção 5).
 
 ### 2.3 `AlarmeService` (service)
 
@@ -147,16 +145,17 @@ Esta seção descreve o comportamento **atual** do código. Os testes verificam 
 - Remover alarme com posição inválida: informa que falhou e não salva.
 - Verificar alarmes sem nenhum alarme vencido: não salva.
 
-**Comportamento a decidir: `atualizar` com prioridade inválida (A CONFIRMAR)**
+**Bug conhecido: `atualizar` com prioridade inválida altera a tarefa pela metade**
 - Nome, descrição, data e hora são alterados **antes** de a prioridade ser validada. Com prioridade inválida, o erro acontece depois que esses campos já mudaram em memória, e nada é salvo. A tarefa fica parcialmente alterada.
-- Proposta: tratar como o bug do construtor (teste do comportamento correto, "nenhum campo muda", com `@PendingFeature` e comentário; correção fora do escopo).
+- O teste exige o comportamento **correto** (nenhum campo muda) e fica marcado com `@PendingFeature`, com um comentário explicando o bug (CA57).
+- A correção está fora do escopo (seção 5).
 
-**Comportamento a decidir: ID perdido quando `adicionar` falha (A CONFIRMAR)**
+**Comportamento aceito: ID perdido quando `adicionar` falha**
 - Quando um alarme inválido impede a criação da tarefa, o número de ID já foi usado e a próxima tarefa pula esse número.
-- Proposta: considerar aceitável e não testar o ID seguinte.
+- Esse comportamento é considerado aceitável. O ID seguinte **não é testado**.
 
-**Valores nulos (A CONFIRMAR)**
-- Atualizar status para nulo é aceito e deixa a tarefa sem status. Adicionar com lista de antecedências nula dá erro. O console nunca envia esses valores. Proposta: **não testar**, como no `model`.
+**Valores nulos (não testados)**
+- Atualizar status para nulo é aceito e deixa a tarefa sem status. Adicionar com lista de antecedências nula dá erro. Como o console nunca envia esses valores, **nulos não são testados** no `service`. A única exceção é o filtro por categoria nula (CA34), que já funciona sem erro.
 
 ### 2.5 `TarefaRepository` (repository)
 
@@ -225,6 +224,7 @@ Esta seção descreve o comportamento **atual** do código. Os testes verificam 
 - **CA39** — Dado uma tarefa existente, quando todos os seus campos são atualizados, então os novos valores ficam gravados na tarefa, a lista é reordenada e os dados são salvos.
 - **CA40** — Dado uma tarefa com alarme disparado, quando ela é atualizada com outro prazo, então o alarme volta a "não disparado"; e quando é atualizada com o mesmo prazo, então continua "disparado".
 - **CA41** — Dado uma tarefa existente, quando ela é atualizada com prioridade 0, então ocorre um erro e nada é salvo.
+- **CA57** — Dado uma tarefa existente, quando ela é atualizada com novos valores e prioridade 0, então deveria ocorrer um erro sem que nenhum campo da tarefa mude. *(Bug conhecido: teste marcado com `@PendingFeature`.)*
 - **CA42** — Dado uma tarefa existente, quando ela é deletada, então some da lista, o resultado é "sucesso" e os dados são salvos.
 - **CA43** — Dado uma tarefa existente, quando um alarme de 15 minutos é adicionado, então a tarefa passa a tê-lo e os dados são salvos; e quando o alarme tem antecedência repetida ou 0, então ocorre um erro e nada é salvo.
 - **CA44** — Dado uma tarefa com um alarme, quando ele é removido, então a tarefa fica sem alarmes e os dados são salvos; e quando a posição é inválida, então o resultado é "falhou" e nada é salvo.
@@ -240,7 +240,7 @@ Esta seção descreve o comportamento **atual** do código. Os testes verificam 
 - **CA52** — Dado um caminho que é uma pasta, quando se tenta salvar, então nenhum erro é lançado.
 
 ### Gerais
-- **CA53** — Dado o projeto com o JDK 25, quando `./gradlew test` é executado em `backend/`, então todos os testes passam (o teste do CA09 aparece como pendente/ignorado, sem quebrar o build).
+- **CA53** — Dado o projeto com o JDK 25, quando `./gradlew test` é executado em `backend/`, então todos os testes passam (os testes marcados com `@PendingFeature` aparecem como pendentes/ignorados, sem quebrar o build).
 - **CA54** — Dado os testes executados, quando o relatório JaCoCo é gerado, então ele mostra a cobertura de `model`, `service` e `repository`, sem a classe `Main`, e o build não falha por cobertura.
 - **CA55** — Dado a feature concluída, quando se compara `backend/src/main` com a branch `main`, então não há nenhuma alteração.
 - **CA56** — Dado a execução dos testes, quando ela termina, então o arquivo `backend/tarefas.dat` não foi criado nem alterado.
@@ -259,7 +259,7 @@ Esta seção descreve o comportamento **atual** do código. Os testes verificam 
 | `backend/build.gradle` | Adiciona o plugin `groovy`, o plugin `jacoco` (só relatório) e as dependências de teste aprovadas. |
 | `backend/src/test/groovy/...` | Pasta nova com os 5 arquivos de teste (`AlarmeSpec`, `TarefaSpec`, `AlarmeServiceSpec`, `TarefaServiceSpec`, `TarefaRepositorySpec`). |
 | `docs/spec.md` | Este documento. |
-| `AGENTS.md` | Atualizado no final, para indicar Spock/JaCoCo, a pasta `src/test/groovy`, o sufixo `Spec` e os comandos de teste e de cobertura. Hoje ele fala em `src/test/java` e sufixo `Test`. |
+| `AGENTS.md` | Atualizado logo após a configuração do Spock, para indicar Spock/JaCoCo, a pasta `src/test/groovy`, o sufixo `Spec` e os comandos de teste e de cobertura. Hoje ele fala em `src/test/java` e sufixo `Test`. |
 
 ### Dependências (todas de teste, aprovadas)
 - Groovy 4
@@ -275,14 +275,16 @@ As dependências JUnit Jupiter que já existem **são mantidas**. Nenhuma depend
 - **Tempo de build.** A compilação do Groovy deixa `./gradlew build` um pouco mais lento. `./gradlew run` não é afetado.
 
 ### Forma de entrega
-- Branch `feature/testes-unitarios`, um commit por etapa, mensagens em inglês.
+- Branch `feature/testes-unitarios`, um commit por tarefa do plano, mensagens em inglês.
 - A spec é commitada antes de qualquer código.
 
 ---
 
 ## 5. Fora do escopo
 
-- **Corrigir bugs do código de produção**, inclusive o do construtor de `Tarefa` (CA09) e os itens A CONFIRMAR da seção 2.4.
+- **Corrigir bugs do código de produção**, inclusive o do construtor de `Tarefa` (CA09) e o de `atualizar` com prioridade inválida (CA57).
+- **Testar valores nulos** no `model` e no `service`, exceto o filtro por categoria nula (CA34).
+- **Testar o ID perdido** quando `adicionar` falha (comportamento aceito, seção 2.4).
 - **Qualquer alteração em `backend/src/main`**, inclusive refatorações.
 - **Testar o `Main`**: menu, leitura de entradas, conversão de `30m`/`2h`/`1d`, mensagens no console e `System.exit`.
 - **Testar a verificação automática a cada 30 segundos** (thread em segundo plano).
