@@ -109,7 +109,7 @@ Concluído: `AGENTS.md`, `docs/spec.md` e `docs/plano.md` foram commitados antes
 - Critérios de aceite relacionados: CA16, CA17, CA18, CA19
 - Como validar: `./gradlew test --tests 'service.AlarmeServiceSpec'` → `BUILD SUCCESSFUL`, sem falhas.
 
-## [ ] Tarefa 10 – AlarmeService: tarefas concluídas e vários alarmes
+## [x] Tarefa 10 – AlarmeService: tarefas concluídas e vários alarmes
 - O que será feito:
   - Tarefa `DONE` com alarme vencido → nenhum aviso; alarme continua "não disparado".
   - Tarefa com dois alarmes vencidos → um único aviso; os dois ficam "disparados".

@@ -1,6 +1,7 @@
 package service
 
 import model.Alarme
+import model.StatusEnum
 import model.Tarefa
 import spock.lang.Specification
 import spock.lang.Subject
@@ -89,6 +90,47 @@ class AlarmeServiceSpec extends Specification {
         tarefa.alarmes[0].disparado
     }
 
+    def "não deve disparar o alarme de uma tarefa concluída"() {
+        given: "uma tarefa DONE com alarme de 30 minutos já vencido"
+        def tarefa = tarefaComAlarme(30)
+        tarefa.status = StatusEnum.DONE
+
+        when: "a verificação é feita às 09:45"
+        def avisos = service.verificar([tarefa], horario(9, 45))
+
+        then: "nenhum aviso é gerado e o alarme continua não disparado"
+        avisos.isEmpty()
+        !tarefa.alarmes[0].disparado
+    }
+
+    def "deve gerar um único aviso quando vários alarmes da mesma tarefa vencem juntos"() {
+        given: "uma tarefa com alarmes de 30 e 60 minutos, ambos vencidos às 09:45"
+        def tarefa = novaTarefa(1, 30, 60)
+
+        when: "a verificação é feita às 09:45"
+        def avisos = service.verificar([tarefa], horario(9, 45))
+
+        then: "é gerado um único aviso e os dois alarmes ficam disparados"
+        avisos.size() == 1
+        tarefa.alarmes.size() == 2
+        tarefa.alarmes.every { it.disparado }
+    }
+
+    def "deve gerar um aviso para cada tarefa com alarme vencido"() {
+        given: "duas tarefas com alarmes vencidos e uma tarefa sem alarmes"
+        def tarefa1 = novaTarefa(1, 30)
+        def tarefa2 = novaTarefa(2, 60)
+        def tarefaSemAlarmes = novaTarefa(3)
+
+        when: "a verificação é feita às 09:45"
+        def avisos = service.verificar([tarefa1, tarefa2, tarefaSemAlarmes], horario(9, 45))
+
+        then: "são gerados dois avisos, um para cada tarefa com alarme vencido"
+        avisos.size() == 2
+        avisos[0].contains('"Tarefa 1"')
+        avisos[1].contains('"Tarefa 2"')
+    }
+
     private static LocalDateTime horario(int hora, int minuto) {
         LocalDateTime.of(DATA_PRAZO, LocalTime.of(hora, minuto))
     }
@@ -96,6 +138,13 @@ class AlarmeServiceSpec extends Specification {
     private static Tarefa tarefaComAlarme(int antecedenciaMinutos) {
         def tarefa = new Tarefa(1, "Estudar", "Revisar Spock", DATA_PRAZO, HORA_PRAZO, 3, "Estudos")
         tarefa.adicionarAlarme(new Alarme(antecedenciaMinutos))
+        tarefa
+    }
+
+    /** Cria a tarefa "Tarefa {id}", TODO, prioridade 3, prazo 10:00, com os alarmes informados. */
+    private static Tarefa novaTarefa(int id, int... antecedenciasMinutos) {
+        def tarefa = new Tarefa(id, "Tarefa " + id, "Descrição " + id, DATA_PRAZO, HORA_PRAZO, 3, "Estudos")
+        antecedenciasMinutos.each { tarefa.adicionarAlarme(new Alarme(it)) }
         tarefa
     }
 }
