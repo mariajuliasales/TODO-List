@@ -207,6 +207,8 @@ Esta seção descreve o comportamento **atual** do código. Os testes verificam 
 - **CA24** — Dado um alarme que dispara antes do prazo, quando o aviso é gerado, então ele contém "vence em"; e se dispara depois do prazo, contém "venceu há".
 - **CA25** — Dado uma tarefa `DOING`, quando seu alarme dispara, então o aviso contém "Tarefa em andamento."; e para uma tarefa `TODO`, contém "Tarefa ainda não iniciada.".
 - **CA26** — Dado a tarefa "Estudar" com prazo em 20/11/2026 às 14:30, quando seu alarme dispara, então o aviso contém "Estudar" e "20/11/2026 às 14:30".
+- **CA58** — Dado uma tarefa `DONE` com alarme vencido, que não disparou na verificação anterior, quando ela volta para `TODO` e os alarmes são verificados de novo, então é gerado um aviso e o alarme fica "disparado".
+- **CA60** — Dado uma lista com uma única tarefa, que não tem alarmes, quando os alarmes são verificados, então nenhum aviso é gerado.
 
 ### TarefaService
 - **CA27** — Dado que não há tarefas salvas, quando três tarefas são adicionadas, então elas recebem os IDs 1, 2 e 3.
@@ -218,6 +220,7 @@ Esta seção descreve o comportamento **atual** do código. Os testes verificam 
 - **CA33** — Dado que não há tarefas, quando se lista ou se filtra por categoria, prioridade ou status, então o resultado é uma lista vazia.
 - **CA34** — Dado uma tarefa na categoria "Trabalho", quando se filtra por "trabalho" ou "TRABALHO", então ela é encontrada; e quando se filtra por "Casa" ou por categoria nula, então a lista vem vazia.
 - **CA35** — Dado tarefas com prioridades e status diferentes, quando se filtra por uma prioridade ou por um status, então só aparecem as tarefas correspondentes.
+- **CA59** — Dado tarefas cadastradas com prioridades 3 e 5 e status `TODO` e `DOING`, quando se filtra pela prioridade 1 ou pelo status `DONE`, então o resultado é uma lista vazia.
 - **CA36** — Dado uma tarefa existente, quando é buscada pelo ID, então ela é devolvida; e quando se busca um ID inexistente, então o resultado é nulo.
 - **CA37** — Dado uma tarefa existente, quando seu status é alterado para `DOING`, então ela é devolvida com o novo status e os dados são salvos.
 - **CA38** — Dado um ID inexistente, quando se tenta atualizar o status, atualizar a tarefa, deletar, adicionar alarme ou remover alarme, então o resultado é "falhou" (`null` ou `false`) e nada é salvo.

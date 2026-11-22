@@ -251,6 +251,24 @@ Concluído: `AGENTS.md`, `docs/spec.md` e `docs/plano.md` foram commitados antes
     7. **Alarme em tarefa concluída:** primeiro, opção 4 muda "Prova" para `DONE`; depois, opção 6 adiciona em "Prova" um alarme de `2d` (que já estaria vencido) → nenhum aviso aparece para "Prova".
     8. Sair com `0`. Restaurar os dados: `mv tarefas.dat.bak tarefas.dat` (ou `rm tarefas.dat` se o arquivo não existia antes).
 
+## [ ] Tarefa 23 – Casos de borda adicionais (AlarmeService e TarefaService)
+- O que será feito:
+  - No `AlarmeServiceSpec`:
+    - Tarefa `DONE` com alarme vencido: a primeira verificação não gera aviso; a tarefa volta para `TODO`; a segunda verificação gera um aviso e o alarme fica "disparado".
+    - Uma única tarefa, sem alarmes, na lista → nenhum aviso.
+  - No `TarefaServiceSpec`:
+    - Com tarefas cadastradas (prioridades 3 e 5; status `TODO` e `DOING`), filtro pela prioridade 1 e filtro pelo status `DONE` → lista vazia.
+  - Como esta tarefa vem depois da verificação final (Tarefa 22), repetir a verificação dos critérios gerais.
+- Arquivos criados ou alterados:
+  - `backend/src/test/groovy/service/AlarmeServiceSpec.groovy`
+  - `backend/src/test/groovy/service/TarefaServiceSpec.groovy`
+- Critérios de aceite relacionados: CA58, CA59, CA60, CA53 (repetição da verificação)
+- Como validar:
+  - `./gradlew test --tests 'service.AlarmeServiceSpec'` → `BUILD SUCCESSFUL`, sem falhas.
+  - `./gradlew test --tests 'service.TarefaServiceSpec'` → `BUILD SUCCESSFUL`, sem falhas (o teste do CA57 continua ignorado).
+  - `./gradlew clean test` → `BUILD SUCCESSFUL`; só os testes com `@PendingFeature` como ignorados.
+  - `git diff --stat main -- src/main` → nenhuma saída.
+
 ---
 
 ## Critérios de aceite × tarefas
@@ -309,8 +327,11 @@ Concluído: `AGENTS.md`, `docs/spec.md` e `docs/plano.md` foram commitados antes
 | CA50 | 13 |
 | CA51 | 12 |
 | CA52 | 13 |
-| CA53 | 1, 6, 18, 22 |
+| CA53 | 1, 6, 18, 22, 23 |
 | CA54 | 21 |
 | CA55 | 22 |
 | CA56 | 12, 22 |
 | CA57 | 18 |
+| CA58 | 23 |
+| CA59 | 23 |
+| CA60 | 23 |
