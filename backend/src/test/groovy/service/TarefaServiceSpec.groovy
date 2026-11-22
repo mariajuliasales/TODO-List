@@ -8,6 +8,7 @@ import spock.lang.PendingFeature
 import spock.lang.Specification
 
 import java.time.LocalDate
+import java.time.LocalDateTime
 import java.time.LocalTime
 
 class TarefaServiceSpec extends Specification {
@@ -464,6 +465,54 @@ class TarefaServiceSpec extends Specification {
 
         where:
         posicao << [-1, 1]
+    }
+
+    def "deve sugerir 120 minutos de antecedência para a prioridade 3"() {
+        given: "um serviço sem tarefas"
+        repository.carregar() >> []
+        def service = new TarefaService(repository)
+
+        when: "a antecedência é sugerida para a prioridade 3"
+        def sugestao = service.sugerirAntecedencia(3)
+
+        then: "a sugestão é de 120 minutos, igual à do AlarmeService"
+        sugestao == 120
+        sugestao == new AlarmeService().sugerirAntecedencia(3)
+    }
+
+    def "deve devolver o aviso e salvar quando algum alarme vence"() {
+        given: "uma tarefa com prazo às 14:30 e alarme de 30 minutos"
+        def tarefa = novaTarefaComAlarmes(1, "Estudar", 30)
+        repository.carregar() >> [tarefa]
+        def service = new TarefaService(repository)
+
+        when: "os alarmes são verificados às 14:15, depois do momento de disparo"
+        def avisos = service.verificarAlarmes(LocalDateTime.of(DATA_TERMINO, LocalTime.of(14, 15)))
+
+        then: "os dados são salvos uma única vez"
+        1 * repository.salvar(_)
+
+        and: "é devolvido um aviso e o alarme fica disparado"
+        avisos.size() == 1
+        avisos[0].contains('"Estudar"')
+        tarefa.alarmes[0].disparado
+    }
+
+    def "não deve devolver avisos nem salvar quando nenhum alarme vence"() {
+        given: "uma tarefa com prazo às 14:30 e alarme de 30 minutos"
+        def tarefa = novaTarefaComAlarmes(1, "Estudar", 30)
+        repository.carregar() >> [tarefa]
+        def service = new TarefaService(repository)
+
+        when: "os alarmes são verificados às 13:59, antes do momento de disparo"
+        def avisos = service.verificarAlarmes(LocalDateTime.of(DATA_TERMINO, LocalTime.of(13, 59)))
+
+        then: "nada é salvo"
+        0 * repository.salvar(_)
+
+        and: "nenhum aviso é devolvido e o alarme continua não disparado"
+        avisos.isEmpty()
+        !tarefa.alarmes[0].disparado
     }
 
     private static Tarefa novaTarefaComAlarmes(int id, String nome, int... antecedencias) {

@@ -209,7 +209,7 @@ Concluído: `AGENTS.md`, `docs/spec.md` e `docs/plano.md` foram commitados antes
 - Critérios de aceite relacionados: CA42, CA43, CA44
 - Como validar: `./gradlew test --tests 'service.TarefaServiceSpec'` → `BUILD SUCCESSFUL`, sem falhas.
 
-## [ ] Tarefa 20 – TarefaService: sugestão de antecedência e verificação de alarmes
+## [x] Tarefa 20 – TarefaService: sugestão de antecedência e verificação de alarmes
 - O que será feito:
   - Sugestão de antecedência para prioridade 3 → 120.
   - Verificar alarmes com alarme vencido → um aviso e `salvar` chamado; sem alarme vencido → nenhum aviso e `salvar` não chamado.
