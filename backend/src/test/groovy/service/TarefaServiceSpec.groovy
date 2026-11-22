@@ -375,6 +375,103 @@ class TarefaServiceSpec extends Specification {
         tarefa.categoria == "Estudos"
     }
 
+    def "deve deletar a tarefa e salvar"() {
+        given: "um serviço com tarefas de IDs 1 e 2"
+        repository.carregar() >> [novaTarefa(1, "Estudar"), novaTarefa(2, "Mercado")]
+        def service = new TarefaService(repository)
+
+        when: "a tarefa de ID 1 é deletada"
+        def deletado = service.deletar(1)
+
+        then: "os dados são salvos uma única vez"
+        1 * repository.salvar(_)
+
+        and: "a remoção tem sucesso e a tarefa some da lista"
+        deletado
+        service.listar()*.id == [2]
+        service.buscarPorId(1) == null
+    }
+
+    def "deve adicionar um alarme à tarefa e salvar"() {
+        given: "uma tarefa salva com um alarme de 30 minutos"
+        def tarefa = novaTarefaComAlarmes(1, "Estudar", 30)
+        repository.carregar() >> [tarefa]
+        def service = new TarefaService(repository)
+
+        when: "um alarme de 15 minutos é adicionado"
+        def adicionado = service.adicionarAlarme(1, 15)
+
+        then: "os dados são salvos uma única vez"
+        1 * repository.salvar(_)
+
+        and: "a tarefa passa a ter o novo alarme"
+        adicionado
+        tarefa.alarmes*.antecedenciaMinutos == [30, 15]
+    }
+
+    def "deve lançar erro e não salvar ao adicionar um alarme com antecedência #antecedencia"() {
+        given: "uma tarefa salva com um alarme de 30 minutos"
+        def tarefa = novaTarefaComAlarmes(1, "Estudar", 30)
+        repository.carregar() >> [tarefa]
+        def service = new TarefaService(repository)
+
+        when: "um alarme inválido é adicionado"
+        service.adicionarAlarme(1, antecedencia)
+
+        then: "ocorre um erro de argumento inválido"
+        thrown(IllegalArgumentException)
+
+        and: "nada é salvo e a tarefa continua só com o alarme original"
+        0 * repository.salvar(_)
+        tarefa.alarmes*.antecedenciaMinutos == [30]
+
+        where:
+        antecedencia << [30, 0]
+    }
+
+    def "deve remover o alarme da tarefa e salvar"() {
+        given: "uma tarefa salva com um alarme de 30 minutos"
+        def tarefa = novaTarefaComAlarmes(1, "Estudar", 30)
+        repository.carregar() >> [tarefa]
+        def service = new TarefaService(repository)
+
+        when: "o alarme da posição 0 é removido"
+        def removido = service.removerAlarme(1, 0)
+
+        then: "os dados são salvos uma única vez"
+        1 * repository.salvar(_)
+
+        and: "a remoção tem sucesso e a tarefa fica sem alarmes"
+        removido
+        tarefa.alarmes.isEmpty()
+    }
+
+    def "deve informar falha e não salvar ao remover um alarme na posição #posicao"() {
+        given: "uma tarefa salva com um alarme de 30 minutos"
+        def tarefa = novaTarefaComAlarmes(1, "Estudar", 30)
+        repository.carregar() >> [tarefa]
+        def service = new TarefaService(repository)
+
+        when: "se tenta remover um alarme em uma posição inválida"
+        def removido = service.removerAlarme(1, posicao)
+
+        then: "nada é salvo"
+        0 * repository.salvar(_)
+
+        and: "a remoção falha e o alarme continua na tarefa"
+        !removido
+        tarefa.alarmes*.antecedenciaMinutos == [30]
+
+        where:
+        posicao << [-1, 1]
+    }
+
+    private static Tarefa novaTarefaComAlarmes(int id, String nome, int... antecedencias) {
+        def tarefa = novaTarefa(id, nome)
+        antecedencias.each { tarefa.adicionarAlarme(new Alarme(it)) }
+        tarefa
+    }
+
     private static Tarefa adicionar(TarefaService service, String nome, int prioridade = 3, List<Integer> antecedencias = []) {
         service.adicionar(nome, "Descrição de " + nome, DATA_TERMINO, HORA_TERMINO, prioridade, "Estudos", antecedencias)
     }

@@ -200,7 +200,7 @@ Concluído: `AGENTS.md`, `docs/spec.md` e `docs/plano.md` foram commitados antes
   - `./gradlew test --tests 'service.TarefaServiceSpec'` → `BUILD SUCCESSFUL`, sem falhas.
   - No relatório, o teste de "nenhum campo muda" aparece como **ignorado** (skipped), não como falha.
 
-## [ ] Tarefa 19 – TarefaService: deletar e gerenciar alarmes
+## [x] Tarefa 19 – TarefaService: deletar e gerenciar alarmes
 - O que será feito:
   - Deletar → tarefa some, resultado `true`, `salvar` chamado.
   - Adicionar alarme de 15 min → tarefa passa a tê-lo, `salvar` chamado; antecedência repetida ou 0 → erro, `salvar` não chamado.
