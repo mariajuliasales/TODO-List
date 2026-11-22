@@ -1,5 +1,6 @@
 package service
 
+import model.Alarme
 import model.StatusEnum
 import model.Tarefa
 import repository.TarefaRepository
@@ -224,6 +225,54 @@ class TarefaServiceSpec extends Specification {
 
         then: "o resultado é nulo"
         tarefa == null
+    }
+
+    def "deve atualizar o status da tarefa e salvar"() {
+        given: "uma tarefa salva com status TODO"
+        repository.carregar() >> [novaTarefa(1, "Estudar")]
+        def service = new TarefaService(repository)
+
+        when: "o status é alterado para DOING"
+        def tarefa = service.atualizarStatus(1, StatusEnum.DOING)
+
+        then: "os dados são salvos uma única vez"
+        1 * repository.salvar(_)
+
+        and: "a tarefa é devolvida com o novo status"
+        tarefa.id == 1
+        tarefa.status == StatusEnum.DOING
+        service.buscarPorId(1).status == StatusEnum.DOING
+    }
+
+    def "deve informar falha e não salvar ao tentar #operacao com ID inexistente"() {
+        given: "um serviço com uma tarefa de ID 1, que tem um alarme"
+        def tarefa = novaTarefa(1, "Estudar")
+        tarefa.adicionarAlarme(new Alarme(30))
+        repository.carregar() >> [tarefa]
+        def service = new TarefaService(repository)
+
+        when: "a operação é feita com o ID 99, que não existe"
+        def resultado = acao(service)
+
+        then: "o resultado indica falha"
+        resultado == resultadoEsperado
+
+        and: "nada é salvo"
+        0 * repository.salvar(_)
+
+        and: "a tarefa existente não é alterada"
+        service.listar()*.id == [1]
+        tarefa.status == StatusEnum.TODO
+        tarefa.alarmes*.antecedenciaMinutos == [30]
+
+        where:
+        operacao                 | acao                                                       || resultadoEsperado
+        "atualizar o status"     | { TarefaService s -> s.atualizarStatus(99, StatusEnum.DONE) } || null
+        "atualizar a tarefa"     | { TarefaService s ->
+                                       s.atualizar(99, "Novo", "Nova", DATA_TERMINO, HORA_TERMINO, 4, "Casa") } || false
+        "deletar"                | { TarefaService s -> s.deletar(99) }                       || false
+        "adicionar alarme"       | { TarefaService s -> s.adicionarAlarme(99, 60) }           || false
+        "remover alarme"         | { TarefaService s -> s.removerAlarme(99, 0) }              || false
     }
 
     private static Tarefa adicionar(TarefaService service, String nome, int prioridade = 3, List<Integer> antecedencias = []) {

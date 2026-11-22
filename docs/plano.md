@@ -180,7 +180,7 @@ Concluído: `AGENTS.md`, `docs/spec.md` e `docs/plano.md` foram commitados antes
 - Critérios de aceite relacionados: CA32, CA33, CA34, CA35, CA36
 - Como validar: `./gradlew test --tests 'service.TarefaServiceSpec'` → `BUILD SUCCESSFUL`, sem falhas.
 
-## [ ] Tarefa 17 – TarefaService: atualizar status e IDs inexistentes
+## [x] Tarefa 17 – TarefaService: atualizar status e IDs inexistentes
 - O que será feito:
   - Atualizar status para `DOING` → tarefa devolvida com o novo status e `salvar` chamado.
   - ID inexistente em atualizar status, atualizar, deletar, adicionar alarme e remover alarme → `null`/`false` e `salvar` não chamado (tabela de dados ou um teste por operação).
