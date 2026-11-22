@@ -2,6 +2,7 @@ plugins {
     id 'java'
     id 'application'
     id 'groovy'
+    id 'jacoco'
 }
 
 group = 'org.example'
@@ -36,4 +37,19 @@ run {
 
 test {
     useJUnitPlatform()
+}
+
+// Relatório de cobertura (apenas informativo: não há regra que faça o build falhar por cobertura).
+// Gerar com: ./gradlew test jacocoTestReport
+jacocoTestReport {
+    dependsOn test
+    reports {
+        html.required = true
+        xml.required = false
+        csv.required = false
+    }
+    // Main (menu de console) está fora do escopo dos testes unitários
+    classDirectories.setFrom(sourceSets.main.output.classesDirs.collect { dir ->
+        fileTree(dir) { exclude 'Main.class', 'Main$*.class' }
+    })
 }

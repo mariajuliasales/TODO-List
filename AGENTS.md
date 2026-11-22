@@ -47,8 +47,9 @@ Conforme o README e o código em `frontend/js/`:
 |---|---|
 | Linguagem backend | Java (sem framework; apenas biblioteca padrão) |
 | Versão do Java | **Java 21** (versão-alvo do projeto). Atenção: o `build.gradle` ainda não fixa a versão (sem toolchain/`sourceCompatibility`), então o Gradle usa o JDK que estiver instalado. Não use recursos de Java posteriores ao 21. Fixar a versão no `build.gradle` exige autorização (ver Restrições). |
-| Build | Gradle via wrapper (`gradlew`), versão **9.6.0** ([gradle-wrapper.properties](backend/gradle/wrapper/gradle-wrapper.properties)); plugins `java`, `application` e `groovy` |
+| Build | Gradle via wrapper (`gradlew`), versão **9.6.0** ([gradle-wrapper.properties](backend/gradle/wrapper/gradle-wrapper.properties)); plugins `java`, `application`, `groovy` e `jacoco` |
 | Testes | **Spock 2.5** (`spock-core:2.5-groovy-4.0`) com **Groovy 4.0.33**, rodando na JUnit Platform (`useJUnitPlatform()`). Para mocks de classes: `byte-buddy` 1.18.17 e `objenesis` 3.6. `junit-platform-launcher` (exigido pelo Gradle 9 para iniciar os testes). JUnit Jupiter 5 (BOM `5.10.0`) continua declarado. Todas são dependências só de teste. |
+| Cobertura | **JaCoCo** (plugin do Gradle, versão padrão do Gradle 9.6: 0.8.14). Gera só relatório HTML, sem a classe `Main`; o build **não** falha por cobertura. Meta informal: 80% das linhas em `model`, `service` e `repository`. |
 | Dependências de produção | Nenhuma |
 | Frontend | HTML5, CSS3, JavaScript (ES modules, sem framework, sem bundler, sem `package.json`), LocalStorage |
 
@@ -109,6 +110,9 @@ cd backend
 
 # Executar uma classe de teste específica
 ./gradlew test --tests 'model.AlarmeSpec'
+
+# Executar os testes e gerar o relatório de cobertura (JaCoCo)
+./gradlew test jacocoTestReport
 ```
 
 No Windows, use `gradlew.bat` no lugar de `./gradlew`.
@@ -116,6 +120,7 @@ No Windows, use `gradlew.bat` no lugar de `./gradlew`.
 Observações:
 - `./gradlew run` usa `backend/` como diretório de trabalho, então lê/grava `backend/tarefas.dat`. Em testes, **não** use esse arquivo: passe ao `TarefaRepository` um caminho temporário (ex.: `@TempDir` do Spock, `spock.lang.TempDir`).
 - O resultado dos testes fica em `backend/build/reports/tests/test/index.html`.
+- O relatório de cobertura fica em `backend/build/reports/jacoco/test/html/index.html`.
 - `Main` chama `System.exit(0)` ao sair e usa `LocalDateTime.now()`; para testar alarmes, chame `TarefaService.verificarAlarmes(LocalDateTime)` / `AlarmeService.verificar(...)` com um horário fixo.
 
 **Frontend**: não há build. Execute com a extensão **Live Server** (VS Code): abra `frontend/index.html` e use "Open with Live Server". Não abra o arquivo direto no navegador (`file://`), porque o `index.html` carrega `js/main.js` como módulo (`type="module"`) e isso pode ser bloqueado.

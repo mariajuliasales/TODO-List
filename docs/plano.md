@@ -217,7 +217,7 @@ Concluído: `AGENTS.md`, `docs/spec.md` e `docs/plano.md` foram commitados antes
 - Critérios de aceite relacionados: CA45, CA46
 - Como validar: `./gradlew test --tests 'service.TarefaServiceSpec'` → `BUILD SUCCESSFUL`, sem falhas.
 
-## [ ] Tarefa 21 – Relatório de cobertura (JaCoCo)
+## [x] Tarefa 21 – Relatório de cobertura (JaCoCo)
 - O que será feito:
   - No `build.gradle`: adicionar o plugin `jacoco`, com relatório HTML que exclui a classe `Main`. Sem regra que faça o build falhar por cobertura.
   - No `AGENTS.md`: incluir o JaCoCo na stack e o comando do relatório de cobertura.
