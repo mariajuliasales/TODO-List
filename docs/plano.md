@@ -228,7 +228,7 @@ Concluído: `AGENTS.md`, `docs/spec.md` e `docs/plano.md` foram commitados antes
   - `./gradlew test jacocoTestReport` → `BUILD SUCCESSFUL`.
   - Abrir `backend/build/reports/jacoco/test/html/index.html` → aparecem os pacotes `model`, `service` e `repository`, e a classe `Main` não aparece.
 
-## [ ] Tarefa 22 – Verificação final e teste manual pelo console
+## [x] Tarefa 22 – Verificação final e teste manual pelo console
 - O que será feito:
   1. Verificação automática dos critérios gerais (CA53, CA55, CA56).
   2. Depois da verificação do CA56: teste manual pelo console, feito pela mantenedora, cobrindo listagem, filtros, mudança de status e alarme.
