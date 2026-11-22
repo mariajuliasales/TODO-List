@@ -188,7 +188,7 @@ Concluído: `AGENTS.md`, `docs/spec.md` e `docs/plano.md` foram commitados antes
 - Critérios de aceite relacionados: CA37, CA38
 - Como validar: `./gradlew test --tests 'service.TarefaServiceSpec'` → `BUILD SUCCESSFUL`, sem falhas.
 
-## [ ] Tarefa 18 – TarefaService: atualizar tarefa
+## [x] Tarefa 18 – TarefaService: atualizar tarefa
 - O que será feito:
   - Atualizar todos os campos → valores novos na tarefa, lista reordenada, `salvar` chamado.
   - Prazo diferente → alarme volta a "não disparado"; mesmo prazo → continua "disparado".

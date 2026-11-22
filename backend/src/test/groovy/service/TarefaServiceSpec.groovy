@@ -4,6 +4,7 @@ import model.Alarme
 import model.StatusEnum
 import model.Tarefa
 import repository.TarefaRepository
+import spock.lang.PendingFeature
 import spock.lang.Specification
 
 import java.time.LocalDate
@@ -273,6 +274,105 @@ class TarefaServiceSpec extends Specification {
         "deletar"                | { TarefaService s -> s.deletar(99) }                       || false
         "adicionar alarme"       | { TarefaService s -> s.adicionarAlarme(99, 60) }           || false
         "remover alarme"         | { TarefaService s -> s.removerAlarme(99, 0) }              || false
+    }
+
+    def "deve atualizar todos os campos da tarefa, reordenar a lista e salvar"() {
+        given: "tarefas salvas com prioridades 4 e 2"
+        repository.carregar() >> [novaTarefa(1, "Alta", 4), novaTarefa(2, "Baixa", 2)]
+        def service = new TarefaService(repository)
+
+        when: "a tarefa de prioridade 2 é atualizada com novos valores e prioridade 5"
+        def atualizado = service.atualizar(2, "Relatório", "Entregar relatório",
+                LocalDate.of(2026, 12, 1), LocalTime.of(9, 0), 5, "Trabalho")
+
+        then: "os dados são salvos uma única vez"
+        1 * repository.salvar(_)
+
+        and: "a atualização tem sucesso e a tarefa fica com os novos valores"
+        atualizado
+        def tarefa = service.buscarPorId(2)
+        tarefa.nome == "Relatório"
+        tarefa.descricao == "Entregar relatório"
+        tarefa.dataTermino == LocalDate.of(2026, 12, 1)
+        tarefa.horaTermino == LocalTime.of(9, 0)
+        tarefa.prioridade == 5
+        tarefa.categoria == "Trabalho"
+
+        and: "a lista é reordenada pela nova prioridade"
+        service.listar()*.id == [2, 1]
+    }
+
+    def "deve deixar o alarme #estadoEsperado quando a tarefa é atualizada com #situacao"() {
+        given: "uma tarefa com prazo em 20/11/2026 às 14:30 e um alarme já disparado"
+        def tarefa = novaTarefa(1, "Estudar")
+        tarefa.adicionarAlarme(new Alarme(30))
+        tarefa.alarmes[0].disparado = true
+        repository.carregar() >> [tarefa]
+        def service = new TarefaService(repository)
+
+        when: "a tarefa é atualizada"
+        service.atualizar(1, "Estudar", "Revisar Spock", novaData, novaHora, 3, "Estudos")
+
+        then: "o alarme fica no estado esperado"
+        tarefa.alarmes[0].disparado == disparadoEsperado
+
+        where:
+        situacao       | novaData                    | novaHora              || disparadoEsperado
+        "outro prazo"  | LocalDate.of(2026, 11, 21)  | HORA_TERMINO          || false
+        "outra hora"   | DATA_TERMINO                | LocalTime.of(16, 0)   || false
+        "o mesmo prazo"| DATA_TERMINO                | HORA_TERMINO          || true
+
+        estadoEsperado = disparadoEsperado ? "disparado" : "não disparado"
+    }
+
+    def "deve lançar erro e não salvar quando a tarefa é atualizada com prioridade 0"() {
+        given: "uma tarefa salva com prioridade 3"
+        repository.carregar() >> [novaTarefa(1, "Estudar")]
+        def service = new TarefaService(repository)
+
+        when: "a tarefa é atualizada com prioridade 0"
+        service.atualizar(1, "Estudar", "Revisar Spock", DATA_TERMINO, HORA_TERMINO, 0, "Estudos")
+
+        then: "ocorre um erro de argumento inválido"
+        thrown(IllegalArgumentException)
+
+        and: "nada é salvo"
+        0 * repository.salvar(_)
+    }
+
+    /*
+     * BUG CONHECIDO (spec, seção 2.4 / CA57): TarefaService.atualizar chama setNome,
+     * setDescricao, setDataTermino e setHoraTermino ANTES de setPrioridade. Quando a
+     * prioridade é inválida, a exceção só acontece depois que esses campos já foram
+     * alterados na tarefa em memória, e nada é salvo. A tarefa fica parcialmente alterada.
+     *
+     * Este teste descreve o comportamento correto (nenhum campo muda) e está marcado com
+     * @PendingFeature: enquanto o bug existir, ele falha e o Spock o reporta como ignorado
+     * (skipped), sem quebrar o build. Quando o bug for corrigido, o teste passará e o Spock
+     * acusará erro, avisando que a anotação @PendingFeature deve ser removida.
+     * A correção está fora do escopo desta feature.
+     */
+    @PendingFeature(reason = "atualizar altera a tarefa parcialmente quando a prioridade é inválida (CA57)")
+    def "não deve alterar nenhum campo da tarefa quando a atualização tem prioridade inválida"() {
+        given: "uma tarefa salva com seus valores originais"
+        repository.carregar() >> [novaTarefa(1, "Estudar")]
+        def service = new TarefaService(repository)
+        def tarefa = service.buscarPorId(1)
+
+        when: "a tarefa é atualizada com novos valores e prioridade 0"
+        service.atualizar(1, "Novo nome", "Nova descrição",
+                LocalDate.of(2026, 12, 1), LocalTime.of(9, 0), 0, "Trabalho")
+
+        then: "ocorre um erro de argumento inválido"
+        thrown(IllegalArgumentException)
+
+        and: "nenhum campo da tarefa muda"
+        tarefa.nome == "Estudar"
+        tarefa.descricao == "Descrição de Estudar"
+        tarefa.dataTermino == DATA_TERMINO
+        tarefa.horaTermino == HORA_TERMINO
+        tarefa.prioridade == 3
+        tarefa.categoria == "Estudos"
     }
 
     private static Tarefa adicionar(TarefaService service, String nome, int prioridade = 3, List<Integer> antecedencias = []) {
