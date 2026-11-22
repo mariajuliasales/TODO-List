@@ -251,7 +251,7 @@ Concluído: `AGENTS.md`, `docs/spec.md` e `docs/plano.md` foram commitados antes
     7. **Alarme em tarefa concluída:** primeiro, opção 4 muda "Prova" para `DONE`; depois, opção 6 adiciona em "Prova" um alarme de `2d` (que já estaria vencido) → nenhum aviso aparece para "Prova".
     8. Sair com `0`. Restaurar os dados: `mv tarefas.dat.bak tarefas.dat` (ou `rm tarefas.dat` se o arquivo não existia antes).
 
-## [ ] Tarefa 23 – Casos de borda adicionais (AlarmeService e TarefaService)
+## [x] Tarefa 23 – Casos de borda adicionais (AlarmeService e TarefaService)
 - O que será feito:
   - No `AlarmeServiceSpec`:
     - Tarefa `DONE` com alarme vencido: a primeira verificação não gera aviso; a tarefa volta para `TODO`; a segunda verificação gera um aviso e o alarme fica "disparado".

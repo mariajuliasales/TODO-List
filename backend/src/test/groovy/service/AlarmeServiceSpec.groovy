@@ -204,6 +204,38 @@ class AlarmeServiceSpec extends Specification {
         avisos[0] == 'ALARME: "Estudar" vence em 15 min (20/11/2026 às 14:30). Tarefa ainda não iniciada.'
     }
 
+    def "deve disparar o alarme quando uma tarefa concluída volta para TODO"() {
+        given: "uma tarefa DONE com alarme de 30 minutos já vencido"
+        def tarefa = tarefaComAlarme(30)
+        tarefa.status = StatusEnum.DONE
+
+        and: "uma verificação às 09:40 que não gera aviso por a tarefa estar concluída"
+        def avisosEnquantoConcluida = service.verificar([tarefa], horario(9, 40))
+        assert avisosEnquantoConcluida.isEmpty()
+        assert !tarefa.alarmes[0].disparado
+
+        when: "a tarefa volta para TODO e os alarmes são verificados de novo às 09:45"
+        tarefa.status = StatusEnum.TODO
+        def avisos = service.verificar([tarefa], horario(9, 45))
+
+        then: "é gerado um aviso e o alarme fica disparado"
+        avisos.size() == 1
+        avisos[0].contains('"Estudar"')
+        tarefa.alarmes[0].disparado
+    }
+
+    def "não deve gerar aviso quando a única tarefa da lista não tem alarmes"() {
+        given: "uma lista com uma única tarefa, sem alarmes"
+        def tarefa = novaTarefa(1)
+
+        when: "os alarmes são verificados às 09:45"
+        def avisos = service.verificar([tarefa], horario(9, 45))
+
+        then: "nenhum aviso é gerado"
+        tarefa.alarmes.isEmpty()
+        avisos.isEmpty()
+    }
+
     private static LocalDateTime horario(int hora, int minuto) {
         LocalDateTime.of(DATA_PRAZO, LocalTime.of(hora, minuto))
     }

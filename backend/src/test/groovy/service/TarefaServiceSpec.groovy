@@ -204,6 +204,29 @@ class TarefaServiceSpec extends Specification {
         resultado*.nome == ["Fazendo"]
     }
 
+    def "deve devolver lista vazia ao filtrar por #filtro sem tarefas correspondentes"() {
+        given: "tarefas cadastradas com prioridades 3 e 5 e status TODO e DOING"
+        repository.carregar() >> [
+                novaTarefa(1, "Média", 3, "Estudos", StatusEnum.TODO),
+                novaTarefa(2, "Urgente", 5, "Trabalho", StatusEnum.DOING)
+        ]
+        def service = new TarefaService(repository)
+
+        when: "se filtra por um valor que nenhuma tarefa tem"
+        def resultado = filtrar(service)
+
+        then: "o resultado é uma lista vazia"
+        resultado.isEmpty()
+
+        and: "as tarefas continuam cadastradas"
+        service.listar().size() == 2
+
+        where:
+        filtro           | filtrar
+        "prioridade 1"   | { TarefaService s -> s.listarPorPrioridade(1) }
+        "status DONE"    | { TarefaService s -> s.listarPorStatus(StatusEnum.DONE) }
+    }
+
     def "deve encontrar a tarefa pelo ID quando ela existe"() {
         given: "um serviço com tarefas de IDs 4 e 7"
         repository.carregar() >> [novaTarefa(4, "Quatro"), novaTarefa(7, "Sete")]
